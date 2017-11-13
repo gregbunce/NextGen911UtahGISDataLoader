@@ -50,7 +50,24 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer[featureClassDefinition.GetShapeField()] = sgidFeature.GetShape();
                                             rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
 
-                                            using (Row row = ng911Psap.CreateRow(rowBuffer))
+
+                                            IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
+
+
+                                            int strNameField = featureClassDefinition.FindField("State");
+                                            Field NameField = featureClassDefinition.GetFields()[strNameField];
+                                            
+
+                                            Domain domain = NameField.GetDomain();
+                                            if (domain is CodedValueDomain)
+                                            {
+                                                CodedValueDomain codedValueDomain = domain as CodedValueDomain;
+                                                string value = codedValueDomain.GetName("UT");
+                                                Console.WriteLine(value);
+                                            }
+
+
+                                            using (Row row = ng911Psap.CreateRow(rowBuffer)) 
                                             {
                                             }
                                         }
