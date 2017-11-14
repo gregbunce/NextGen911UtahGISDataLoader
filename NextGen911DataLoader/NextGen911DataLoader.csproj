@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="commands\ConnectToSGID.cs" />
+    <Compile Include="commands\GetRightLeftOffsetPointsFromPolyline.cs" />
     <Compile Include="commands\LoadAddressPnts.cs" />
     <Compile Include="commands\LoadPsapData.cs" />
     <Compile Include="commands\LoadRoads.cs" />
