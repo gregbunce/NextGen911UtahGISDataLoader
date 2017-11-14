@@ -33,7 +33,7 @@ namespace NextGen911DataLoader
             //Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(args[0])));
 
             // Connect to SDID Database //
-            DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute();
+            DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute(args[1], args[2], args[3]);
 
             // ETL Psap Data to NG911
             commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);

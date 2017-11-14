@@ -51,7 +51,21 @@ namespace NextGen911DataLoader.commands
 
                                             // Create attributes (via rowBuffer).
                                             rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
+                                            rowBuffer["State"] = "UT";
 
+                                            // NG911 PSAP FIELDS //
+                                            //Source is a type of String with a length of 75
+                                            //DateUpdate is a type of Date with a length of 8
+                                            //Effective is a type of Date with a length of 8
+                                            //Expire is a type of Date with a length of 8
+                                            //ES_NGUID is a type of String with a length of 100
+                                            //State is a type of String with a length of 2
+                                            //Agency_ID is a type of String with a length of 100
+                                            //ServiceURI is a type of String with a length of 254
+                                            //ServiceURN is a type of String with a length of 50
+                                            //ServiceNum is a type of String with a length of 15
+                                            //AVcard_URI is a type of String with a length of 254
+                                            //DsplayName is a type of String with a length of 60
 
 
 
