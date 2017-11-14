@@ -50,7 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="commands\ConnectToSGID.cs" />
+    <Compile Include="commands\LoadAddressPnts.cs" />
     <Compile Include="commands\LoadPsapData.cs" />
+    <Compile Include="commands\LoadRoads.cs" />
+    <Compile Include="commands\PointInPolygonQuery.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

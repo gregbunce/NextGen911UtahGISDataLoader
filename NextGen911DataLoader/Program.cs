@@ -35,8 +35,10 @@ namespace NextGen911DataLoader
             // Connect to SDID Database //
             DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute();
 
-            // Load Psap Data to FGDB
+            // ETL Psap Data to NG911
             commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);
+
+            // ETL address point to NG911
 
 
             //using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))

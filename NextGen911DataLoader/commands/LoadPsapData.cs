@@ -42,22 +42,25 @@ namespace NextGen911DataLoader.commands
 
                                         //Row SgidRow = SgidPsapCursor.Current;
                                         Feature sgidFeature = (Feature)SgidPsapCursor.Current;
-                                        //Console.WriteLine(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME")));
                                         
                                         // Create row buffer.
                                         using (RowBuffer rowBuffer = ng911Psap.CreateRowBuffer())
                                         {
+                                            // Create geometry (via rowBuffer).
                                             rowBuffer[featureClassDefinition.GetShapeField()] = sgidFeature.GetShape();
+
+                                            // Create attributes (via rowBuffer).
                                             rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
 
 
-                                            IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
 
+
+                                            // DOMAIN VALUES >>>
+                                            IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
 
                                             int strNameField = featureClassDefinition.FindField("State");
                                             Field NameField = featureClassDefinition.GetFields()[strNameField];
-                                            
-
+                                           
                                             Domain domain = NameField.GetDomain();
                                             if (domain is CodedValueDomain)
                                             {
@@ -65,8 +68,10 @@ namespace NextGen911DataLoader.commands
                                                 string value = codedValueDomain.GetName("UT");
                                                 Console.WriteLine(value);
                                             }
+                                            // <<< DOMAIN VALUES
 
 
+                                            // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911Psap.CreateRow(rowBuffer)) 
                                             {
                                             }
