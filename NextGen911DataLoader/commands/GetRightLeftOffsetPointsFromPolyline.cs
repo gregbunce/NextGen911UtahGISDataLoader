@@ -17,7 +17,7 @@ namespace NextGen911DataLoader.commands
                 MapPoint pt_right = GeometryEngine.Instance.MovePointAlongLine(polyline, 0.5, true, 55, SegmentExtension.NoExtension);
                 MapPoint pt_left = GeometryEngine.Instance.MovePointAlongLine(polyline, 0.5, true, -55, SegmentExtension.NoExtension);
 
-                List<MapPoint> mapPoints = new List<MapPoint>;
+                List<MapPoint> mapPoints = new List<MapPoint>();
                 mapPoints.Add(pt_left);
                 mapPoints.Add(pt_right);
 

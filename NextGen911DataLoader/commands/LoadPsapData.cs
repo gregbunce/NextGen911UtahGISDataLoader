@@ -23,7 +23,7 @@ namespace NextGen911DataLoader.commands
                         // Get access to NG911 PSAP
                         using (FeatureClass ng911Psap = NG911Utah.OpenDataset<FeatureClass>("PSAP_Boundaries"))
                         {
-                            // get sgidPsap Feature Class.
+                            // get SGID Psap Feature Class.
                             using (FeatureClass sgidPsap = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.PSAPBoundaries"))
                             {
                                 QueryFilter queryFilter = new QueryFilter
@@ -53,29 +53,13 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
                                             rowBuffer["State"] = "UT";
 
-                                            // NG911 PSAP FIELDS //
-                                            //Source is a type of String with a length of 75
-                                            //DateUpdate is a type of Date with a length of 8
-                                            //Effective is a type of Date with a length of 8
-                                            //Expire is a type of Date with a length of 8
-                                            //ES_NGUID is a type of String with a length of 100
-                                            //State is a type of String with a length of 2
-                                            //Agency_ID is a type of String with a length of 100
-                                            //ServiceURI is a type of String with a length of 254
-                                            //ServiceURN is a type of String with a length of 50
-                                            //ServiceNum is a type of String with a length of 15
-                                            //AVcard_URI is a type of String with a length of 254
-                                            //DsplayName is a type of String with a length of 60
-
-
-
                                             // DOMAIN VALUES >>>
-                                            IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
+                                            //IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
 
-                                            int strNameField = featureClassDefinition.FindField("State");
-                                            Field NameField = featureClassDefinition.GetFields()[strNameField];
+                                            int NG911_Field = featureClassDefinition.FindField("State");
+                                            Field NG911_NameField = featureClassDefinition.GetFields()[NG911_Field];
                                            
-                                            Domain domain = NameField.GetDomain();
+                                            Domain domain = NG911_NameField.GetDomain();
                                             if (domain is CodedValueDomain)
                                             {
                                                 CodedValueDomain codedValueDomain = domain as CodedValueDomain;
@@ -103,8 +87,21 @@ namespace NextGen911DataLoader.commands
                 Console.WriteLine("There was an error with LoadPsapData method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
-
         }
-
     }
 }
+
+
+// NG911 PSAP FIELDS //
+//Source is a type of String with a length of 75
+//DateUpdate is a type of Date with a length of 8
+//Effective is a type of Date with a length of 8
+//Expire is a type of Date with a length of 8
+//ES_NGUID is a type of String with a length of 100
+//State is a type of String with a length of 2
+//Agency_ID is a type of String with a length of 100
+//ServiceURI is a type of String with a length of 254
+//ServiceURN is a type of String with a length of 50
+//ServiceNum is a type of String with a length of 15
+//AVcard_URI is a type of String with a length of 254
+//DsplayName is a type of String with a length of 60

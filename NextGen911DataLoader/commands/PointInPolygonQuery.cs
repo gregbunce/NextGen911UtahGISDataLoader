@@ -16,7 +16,7 @@ namespace NextGen911DataLoader.commands
         {
             try
             {
-                List<string> returnAttrList = new List<string>;
+                List<string> returnAttrList = new List<string>();
 
                 // Set up Spatial Filter for intersect.
                 SpatialQueryFilter spatialQueryFilter = new SpatialQueryFilter

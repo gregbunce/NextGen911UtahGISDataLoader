@@ -15,6 +15,8 @@ namespace NextGen911DataLoader
         static void Main(string[] args)
         {
             // Host.Initialize before constructing any objects from ArcGIS.Core
+
+
             try
             {
                 ArcGIS.Core.Hosting.Host.Initialize();
@@ -38,6 +40,10 @@ namespace NextGen911DataLoader
             // ETL Psap Data to NG911
             commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);
 
+            // ETL Roads Data to NG911
+            commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath);
+            
+            
             // ETL address point to NG911
 
 
