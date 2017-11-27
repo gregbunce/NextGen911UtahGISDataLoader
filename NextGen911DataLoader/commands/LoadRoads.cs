@@ -1,6 +1,7 @@
 ﻿using ArcGIS.Core.Data;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +40,12 @@ namespace NextGen911DataLoader.commands
                                     while (SgidPsapCursor.MoveNext())
                                     {
                                         // Get a feature class definition for the NG911 feature class.
-                                        FeatureClassDefinition featureClassDefinition = ng911Roads.GetDefinition();
+                                        FeatureClassDefinition featureClassDefinitionNG911 = ng911Roads.GetDefinition();
+
+                                        // Get a feature class definition for the SGID feature class
+                                        FeatureClassDefinition featureClassDefinitionSGID = sgidRoads.GetDefinition();
+
+
 
                                         //Row SgidRow = SgidPsapCursor.Current;
                                         Feature sgidFeature = (Feature)SgidPsapCursor.Current;
@@ -48,33 +54,53 @@ namespace NextGen911DataLoader.commands
                                         using (RowBuffer rowBuffer = ng911Roads.CreateRowBuffer())
                                         {
                                             // Create geometry (via rowBuffer).
-                                            rowBuffer[featureClassDefinition.GetShapeField()] = sgidFeature.GetShape();
+                                            rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
 
                                             // Create attributes (via rowBuffer).
+                                            rowBuffer["Source"] = "AGRC";
                                             rowBuffer["StreetName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("NAME"));
+                                            rowBuffer["DateUpdated"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UPDATED"));
+                                            rowBuffer["FromAddr_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("FROMADDR_L"));
+                                            rowBuffer["ToAddr_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("TOADDR_L"));
+                                            rowBuffer["FromAddr_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("FROMADDR_R"));
+                                            rowBuffer["ToAddr_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("TOADDR_R"));
 
-                                            // DOMAIN VALUES >>>
-                                            //IReadOnlyList<Field> NG911fields = featureClassDefinition.GetFields();
 
-                                            int NG911_Field = featureClassDefinition.FindField("St_PreTyp");
-                                            Field NG911_NameField = featureClassDefinition.GetFields()[NG911_Field];
-
-                                            Domain domain = NG911_NameField.GetDomain();
-                                            if (domain is CodedValueDomain)
+                                            // Get Domain Description value.
+                                            string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "POSTTYPE", "POSTTYPE");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
                                             {
-                                                CodedValueDomain codedValueDomain = domain as CodedValueDomain;
-                                                // get the domain description 
-                                                string NG911_DomainValue = codedValueDomain.GetName(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("POSTTYPE")));
-                                                rowBuffer["St_PreTyp"] = NG911_DomainValue;
-
-                                                Console.WriteLine(NG911_DomainValue);
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                Console.WriteLine(codedDomainValue);
+                                                rowBuffer["St_PreTyp"] = codedDomainValue.ToUpper();
                                             }
-                                            // <<< DOMAIN VALUES
+
+
+                                            //// DOMAIN VALUES >>>
+                                            ////IReadOnlyList<Field> NG911fields = featureClassDefinition.GetFields();
+
+                                            //int NG911_Field = featureClassDefinitionNG911.FindField("St_PreTyp");
+                                            //Field NG911_NameField = featureClassDefinitionNG911.GetFields()[NG911_Field];
+
+                                            //Domain domain = NG911_NameField.GetDomain();
+                                            //if (domain is CodedValueDomain)
+                                            //{
+                                            //    CodedValueDomain codedValueDomain = domain as CodedValueDomain;
+                                            //    // get the domain description 
+                                            //    string NG911_DomainValue = codedValueDomain.GetName(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("POSTTYPE")));
+                                            //    rowBuffer["St_PreTyp"] = NG911_DomainValue;
+
+                                            //    Console.WriteLine(NG911_DomainValue);
+                                            //}
+                                            //// <<< DOMAIN VALUES
+
+
 
 
                                             // GET RIGHT/LEFT OFFSET OF MIDPOINT OF LINE SEGMENT >>>
                                             //County_L
-
                                             // <<< GET RIGHT/LEFT OFFSET OF MIDPOINT OF LINE SEGMENT
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
@@ -92,7 +118,7 @@ namespace NextGen911DataLoader.commands
             }
             catch (Exception ex)
             {
-                Console.WriteLine("There was an error with LoadRoads method." +
+                Console.WriteLine("There was an error with LoadRoads method. " +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }

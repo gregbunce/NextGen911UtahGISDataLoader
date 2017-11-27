@@ -53,20 +53,20 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
                                             rowBuffer["State"] = "UT";
 
-                                            // DOMAIN VALUES >>>
-                                            //IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
+                                            //// DOMAIN VALUES >>>
+                                            ////IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
 
-                                            int NG911_Field = featureClassDefinition.FindField("State");
-                                            Field NG911_NameField = featureClassDefinition.GetFields()[NG911_Field];
+                                            //int NG911_Field = featureClassDefinition.FindField("State");
+                                            //Field NG911_NameField = featureClassDefinition.GetFields()[NG911_Field];
                                            
-                                            Domain domain = NG911_NameField.GetDomain();
-                                            if (domain is CodedValueDomain)
-                                            {
-                                                CodedValueDomain codedValueDomain = domain as CodedValueDomain;
-                                                string value = codedValueDomain.GetName("UT");
-                                                Console.WriteLine(value);
-                                            }
-                                            // <<< DOMAIN VALUES
+                                            //Domain domain = NG911_NameField.GetDomain();
+                                            //if (domain is CodedValueDomain)
+                                            //{
+                                            //    CodedValueDomain codedValueDomain = domain as CodedValueDomain;
+                                            //    string value = codedValueDomain.GetName("UT");
+                                            //    Console.WriteLine(value);
+                                            //}
+                                            //// <<< DOMAIN VALUES
 
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
