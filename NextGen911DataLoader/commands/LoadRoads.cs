@@ -36,11 +36,11 @@ namespace NextGen911DataLoader.commands
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
                                     // test the etl using axtell address system b/c there's only 15 segments in this address system
-                                    WhereClause = "ADDRSYS_L = 'AXTELL'"
+                                    // CARTOCODE 15 is proposed roads
+                                    WhereClause = "ADDRSYS_L = 'ST GEORGE' and CARTOCODE <> '15'"
                                 };
 
                                 // Get a Cursor of SGID road features.
-                                //using (RowCursor SgidPsapCursor = sgidRoads.Search(null, true))
                                 using (RowCursor SgidPsapCursor = sgidRoads.Search(queryFilter1, true))
                                 {
                                     // Loop through the sgidPsap features.
@@ -82,7 +82,99 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["Country_R"] = "US";
                                             rowBuffer["State_L"] = "UT";
                                             rowBuffer["State_R"] = "UT";
+                                            rowBuffer["IncMuni_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("INCMUNI_L"));
+                                            rowBuffer["IncMuni_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("INCMUNI_R"));
+                                            rowBuffer["UnincCom_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UNINCCOM_L"));
+                                            rowBuffer["UnincCom_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UNINCCOM_R"));
+                                            rowBuffer["NbrhdCom_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("NBRHDCOM_L"));
+                                            rowBuffer["NbrhdCom_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("NBRHDCOM_R"));
+                                            rowBuffer["PostCode_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ZIPCODE_L"));
+                                            rowBuffer["PostCode_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ZIPCODE_R"));
+                                            rowBuffer["PostComm_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("POSTCOMM_L"));
+                                            rowBuffer["PostComm_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("POSTCOMM_R"));
+                                            rowBuffer["SpeedLimit"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("SPEED_LMT"));
 
+                                            // Derive RoadClass from COFIPS.
+                                            Int32  cofips = Convert.ToInt32(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("CARTOCODE")));
+                                            switch (cofips)
+                                            {
+                                                case 1: // Interstates
+                                                    rowBuffer["RoadClass"] = "Primary";
+                                                    break;
+                                                case 2: // US Highways, Separated
+                                                    rowBuffer["RoadClass"] = "Primary";
+                                                    break;
+                                                case 3: // US Highways, Unseparated
+                                                    rowBuffer["RoadClass"] = "Secondary";
+                                                    break;
+                                                case 4: // Major State Highways, Separated
+                                                    rowBuffer["RoadClass"] = "Primary";
+                                                    break;
+                                                case 5: // Major State Highways, Unseparated
+                                                    rowBuffer["RoadClass"] = "Secondary";
+                                                    break;
+                                                case 6: // Other State Highways(Institutional)
+                                                    rowBuffer["RoadClass"] = "Secondary";
+                                                    break;
+                                                case 7: // Ramps, Collectors
+                                                    rowBuffer["RoadClass"] = "Ramp";
+                                                    break;
+                                                case 8: // Major Local Roads, Paved
+                                                    rowBuffer["RoadClass"] = "Local";
+                                                    break;
+                                                case 9: // Major Local Roads, Not Paved
+                                                    rowBuffer["RoadClass"] = "Local";
+                                                    break;
+                                                case 10: // Other Fedaral Aid Eligible Local Roads
+                                                    rowBuffer["RoadClass"] = "Local";
+                                                    break;
+                                                case 11: // Other Local, Neighborhood, Rural Roads
+                                                    rowBuffer["RoadClass"] = "Local";
+                                                    break;
+                                                case 12: // Other
+                                                    rowBuffer["RoadClass"] = "Other";
+                                                    break;
+                                                case 13: // Non - road feature
+                                                    rowBuffer["RoadClass"] = "Other";
+                                                    break;
+                                                case 14: // Driveway
+                                                    rowBuffer["RoadClass"] = "Private";
+                                                    break;
+                                                case 15: // Proposed
+                                                    rowBuffer["RoadClass"] = "";
+                                                    break;
+                                                case 16: // 4WD and/ or high clearance may be required
+                                                    rowBuffer["RoadClass"] = "Vehicular Trail";
+                                                    break;
+                                                case 17: // Service Access Roads
+                                                    rowBuffer["RoadClass"] = "Other";
+                                                    break;
+                                                case 18: // General Acces Roads
+                                                    rowBuffer["RoadClass"] = "Other";
+                                                    break;
+                                                default:
+                                                    rowBuffer["RoadClass"] = "N/A";
+                                                    break;
+                                            }
+
+                                            // Derive OneWay from ONEWAY.
+                                            //rowBuffer["OneWay"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ONEWAY"));
+                                            string oneWay = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ONEWAY")).ToString();
+                                            switch (oneWay)
+                                            {
+                                                case "0": // Two way
+                                                    rowBuffer["OneWay"] = "B";
+                                                    break;
+                                                case "1": // One way Direction of Arc
+                                                    rowBuffer["OneWay"] = "FT";
+                                                    break;
+                                                case "2": // One way Opposite Direction of Arc
+                                                    rowBuffer["OneWay"] = "TF";
+                                                    break;
+                                                default:
+                                                    //rowBuffer["OneWay"] = "N/A";
+                                                    break;
+                                            }
 
 
                                             // Create attributes for fields that need to Get Domain Description value (Street Type in NG911 is fully spelled out). //
@@ -93,7 +185,6 @@ namespace NextGen911DataLoader.commands
                                             {
                                                 // Proper case.
                                                 //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
-                                                Console.WriteLine(codedDomainValue);
                                                 rowBuffer["St_PosTyp"] = codedDomainValue.ToUpper();
                                             }
 
@@ -104,7 +195,6 @@ namespace NextGen911DataLoader.commands
                                             {
                                                 // Proper case.
                                                 //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
-                                                Console.WriteLine(codedDomainValue);
                                                 rowBuffer["St_Predir"] = codedDomainValue.ToUpper();
                                             }
 
@@ -115,7 +205,6 @@ namespace NextGen911DataLoader.commands
                                             {
                                                 // Proper case.
                                                 //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
-                                                Console.WriteLine(codedDomainValue);
                                                 rowBuffer["St_PosDir"] = codedDomainValue.ToUpper();
                                             }
 
@@ -124,10 +213,17 @@ namespace NextGen911DataLoader.commands
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
+                                                string countyName = string.Empty;
                                                 // Proper case.
                                                 //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
-                                                Console.WriteLine(codedDomainValue);
-                                                rowBuffer["County_L"] = codedDomainValue.ToUpper();
+                                                if (codedDomainValue.Any(char.IsDigit))
+                                                {
+                                                    // The County value contains the cofips, so parse the stirng to obtain the name only.
+                                                    string[] parsedDomain = codedDomainValue.Split(' ');
+                                                    countyName = parsedDomain[2];
+                                                    countyName = countyName.Trim() + " County";
+                                                }
+                                                rowBuffer["County_L"] = countyName.ToUpper();
                                             }
 
                                             // County_R //
@@ -135,10 +231,17 @@ namespace NextGen911DataLoader.commands
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
+                                                string countyName = string.Empty;
                                                 // Proper case.
                                                 //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
-                                                Console.WriteLine(codedDomainValue);
-                                                rowBuffer["County_R"] = codedDomainValue.ToUpper();
+                                                if (codedDomainValue.Any(char.IsDigit))
+                                                {
+                                                    // The County value contains the cofips, so parse the stirng to obtain the name only.
+                                                    string[] parsedDomain = codedDomainValue.Split(' ');
+                                                    countyName = parsedDomain[2];
+                                                    countyName = countyName.Trim() + " County";
+                                                }
+                                                rowBuffer["County_R"] = countyName.ToUpper();
                                             }
 
 
