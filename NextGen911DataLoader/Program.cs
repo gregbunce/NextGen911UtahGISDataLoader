@@ -42,13 +42,13 @@ namespace NextGen911DataLoader
 
             // ETL Roads Data to NG911
             commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath);
-            
-            
+
+
             // ETL address point to NG911
 
 
 
-            
+
             //using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
             //{
             //    using (FeatureClass sgidPsap = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.PSAPBoundaries"))
@@ -64,7 +64,7 @@ namespace NextGen911DataLoader
             //            while (SgidPsapCursor.MoveNext())
             //            {
             //                row = SgidPsapCursor.Current;
-                            
+
             //                Console.WriteLine(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME")));
             //            }
 
@@ -102,6 +102,7 @@ namespace NextGen911DataLoader
 
 
             // Keep the console window open
+            Console.WriteLine("Done!  Press any key to continue...");
             Console.Read();
         }
     }

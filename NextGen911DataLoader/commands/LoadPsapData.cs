@@ -23,10 +23,17 @@ namespace NextGen911DataLoader.commands
                         // Get access to NG911 PSAP
                         using (FeatureClass ng911Psap = NG911Utah.OpenDataset<FeatureClass>("PSAP_Boundaries"))
                         {
+                            // delete all the existing rows
+                            QueryFilter queryFilter = new QueryFilter
+                            {
+                                WhereClause = "OBJECTID > 0"
+                            };
+                            ng911Psap.DeleteRows(queryFilter);
+
                             // get SGID Psap Feature Class.
                             using (FeatureClass sgidPsap = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.PSAPBoundaries"))
                             {
-                                QueryFilter queryFilter = new QueryFilter
+                                QueryFilter queryFilter1 = new QueryFilter
                                 {
                                     //WhereClause = "DISTRCTNAME = 'Indian Prairie School District 204'"
                                 };

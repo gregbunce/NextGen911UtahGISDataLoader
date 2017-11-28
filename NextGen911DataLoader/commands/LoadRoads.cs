@@ -23,10 +23,17 @@ namespace NextGen911DataLoader.commands
                         // Get access to NG911 Roads
                         using (FeatureClass ng911Roads = NG911Utah.OpenDataset<FeatureClass>("RoadCenterlines"))
                         {
+                            // delete all the existing rows
+                            QueryFilter queryFilter = new QueryFilter
+                            {
+                                WhereClause = "OBJECTID > 0"
+                            };
+                            ng911Roads.DeleteRows(queryFilter);
+
                             // get SGID roads Feature Class.
                             using (FeatureClass sgidRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"))
                             {
-                                QueryFilter queryFilter = new QueryFilter
+                                QueryFilter queryFilter1 = new QueryFilter
                                 {
                                     // test the etl using axtell address system b/c there's only 15 segments in this address system
                                     WhereClause = "ADDRSYS_L = 'AXTELL'"
@@ -34,7 +41,7 @@ namespace NextGen911DataLoader.commands
 
                                 // Get a Cursor of SGID road features.
                                 //using (RowCursor SgidPsapCursor = sgidRoads.Search(null, true))
-                                using (RowCursor SgidPsapCursor = sgidRoads.Search(queryFilter, true))
+                                using (RowCursor SgidPsapCursor = sgidRoads.Search(queryFilter1, true))
                                 {
                                     // Loop through the sgidPsap features.
                                     while (SgidPsapCursor.MoveNext())
@@ -45,8 +52,6 @@ namespace NextGen911DataLoader.commands
                                         // Get a feature class definition for the SGID feature class
                                         FeatureClassDefinition featureClassDefinitionSGID = sgidRoads.GetDefinition();
 
-
-
                                         //Row SgidRow = SgidPsapCursor.Current;
                                         Feature sgidFeature = (Feature)SgidPsapCursor.Current;
 
@@ -56,7 +61,7 @@ namespace NextGen911DataLoader.commands
                                             // Create geometry (via rowBuffer).
                                             rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
 
-                                            // Create attributes (via rowBuffer).
+                                            // Create attributes for direct transfer fields (via rowBuffer). //
                                             rowBuffer["Source"] = "AGRC";
                                             rowBuffer["StreetName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("NAME"));
                                             rowBuffer["DateUpdated"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UPDATED"));
@@ -64,9 +69,24 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["ToAddr_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("TOADDR_L"));
                                             rowBuffer["FromAddr_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("FROMADDR_R"));
                                             rowBuffer["ToAddr_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("TOADDR_R"));
+                                            rowBuffer["Effective"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("EFFECTIVE"));
+                                            rowBuffer["Expire"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("EXPIRE"));
+                                            rowBuffer["RCL_NGUID"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UNIQUE_ID"));
+                                            rowBuffer["Parity_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PARITY_L"));
+                                            rowBuffer["Parity_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PARITY_R"));
+                                            rowBuffer["ESN_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ESN_L"));
+                                            rowBuffer["ESN_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ESN_R"));
+                                            rowBuffer["MSAGComm_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("MSAGCOMM_L"));
+                                            rowBuffer["MSAGComm_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("MSAGCOMM_R"));
+                                            rowBuffer["Country_L"] = "US";
+                                            rowBuffer["Country_R"] = "US";
+                                            rowBuffer["State_L"] = "UT";
+                                            rowBuffer["State_R"] = "UT";
 
 
-                                            // Get Domain Description value.
+
+                                            // Create attributes for fields that need to Get Domain Description value (Street Type in NG911 is fully spelled out). //
+                                            // St_PosTyp //
                                             string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "POSTTYPE", "POSTTYPE");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
@@ -74,34 +94,58 @@ namespace NextGen911DataLoader.commands
                                                 // Proper case.
                                                 //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
                                                 Console.WriteLine(codedDomainValue);
-                                                rowBuffer["St_PreTyp"] = codedDomainValue.ToUpper();
+                                                rowBuffer["St_PosTyp"] = codedDomainValue.ToUpper();
+                                            }
+
+                                            // St_Predir //
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "PREDIR", "PREDIR");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
+                                            {
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                Console.WriteLine(codedDomainValue);
+                                                rowBuffer["St_Predir"] = codedDomainValue.ToUpper();
+                                            }
+
+                                            // St_PosDir //
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "POSTDIR", "POSTDIR");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
+                                            {
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                Console.WriteLine(codedDomainValue);
+                                                rowBuffer["St_PosDir"] = codedDomainValue.ToUpper();
+                                            }
+
+                                            // County_L //
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "COUNTY_L", "COUNTY_L");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
+                                            {
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                Console.WriteLine(codedDomainValue);
+                                                rowBuffer["County_L"] = codedDomainValue.ToUpper();
+                                            }
+
+                                            // County_R //
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "COUNTY_R", "COUNTY_R");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
+                                            {
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                Console.WriteLine(codedDomainValue);
+                                                rowBuffer["County_R"] = codedDomainValue.ToUpper();
                                             }
 
 
-                                            //// DOMAIN VALUES >>>
-                                            ////IReadOnlyList<Field> NG911fields = featureClassDefinition.GetFields();
-
-                                            //int NG911_Field = featureClassDefinitionNG911.FindField("St_PreTyp");
-                                            //Field NG911_NameField = featureClassDefinitionNG911.GetFields()[NG911_Field];
-
-                                            //Domain domain = NG911_NameField.GetDomain();
-                                            //if (domain is CodedValueDomain)
-                                            //{
-                                            //    CodedValueDomain codedValueDomain = domain as CodedValueDomain;
-                                            //    // get the domain description 
-                                            //    string NG911_DomainValue = codedValueDomain.GetName(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("POSTTYPE")));
-                                            //    rowBuffer["St_PreTyp"] = NG911_DomainValue;
-
-                                            //    Console.WriteLine(NG911_DomainValue);
-                                            //}
-                                            //// <<< DOMAIN VALUES
-
-
-
-
-                                            // GET RIGHT/LEFT OFFSET OF MIDPOINT OF LINE SEGMENT >>>
-                                            //County_L
-                                            // <<< GET RIGHT/LEFT OFFSET OF MIDPOINT OF LINE SEGMENT
+                                            // Create attributtes for fields that need a spatial intersect (point in polygon query). //
+                                            // get points
+                                            // get intersected boundaries
+                                            // test this field > County_L
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911Roads.CreateRow(rowBuffer))
