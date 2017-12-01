@@ -15,8 +15,6 @@ namespace NextGen911DataLoader
         static void Main(string[] args)
         {
             // Host.Initialize before constructing any objects from ArcGIS.Core
-
-
             try
             {
                 ArcGIS.Core.Hosting.Host.Initialize();
@@ -30,7 +28,6 @@ namespace NextGen911DataLoader
 
             string fgdbPath = args[0];
 
-
             //// Connect to File Geodatabase
             //Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(args[0])));
 
@@ -43,10 +40,8 @@ namespace NextGen911DataLoader
             // ETL Roads Data to NG911
             commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath);
 
-
             // ETL address point to NG911
-
-
+            commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath);
 
 
             //using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))

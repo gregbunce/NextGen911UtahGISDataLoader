@@ -58,6 +58,5 @@ namespace NextGen911DataLoader.commands
                 return null;
             }
         }
-
     }
 }

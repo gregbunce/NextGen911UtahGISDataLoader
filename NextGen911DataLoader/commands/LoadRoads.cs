@@ -253,15 +253,10 @@ namespace NextGen911DataLoader.commands
                                             // Get the right and left offset points based on the midpoint of the polyline.
                                             List<MapPoint> mapPoints = GetRightLeftOffsetPointsFromPolyline.Execute(polyline);
 
-                                            Console.WriteLine(mapPoints[0].X.ToString() + ", " + mapPoints[0].Y.ToString());
-                                            Console.WriteLine(mapPoints[1].X.ToString() + ", " + mapPoints[1].Y.ToString());
-
                                             // Get intersected boundaries.
                                             List<string> listOfFields = new List<string>(new string[] {"NAME", "ZIP5"});
                                             List<string> retunedAttrValuesLeft = PointInPolygonQuery.Execute(mapPoints[0], sgidZipCodes, listOfFields);
                                             List<string> retunedAttrValuesRight = PointInPolygonQuery.Execute(mapPoints[1], sgidZipCodes, listOfFields);
-
-                                            Console.WriteLine(retunedAttrValuesRight[0].ToString() + ", " + retunedAttrValuesRight[1].ToString());
 
                                             rowBuffer["PostComm_L"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
                                             rowBuffer["PostComm_R"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
@@ -288,7 +283,6 @@ namespace NextGen911DataLoader.commands
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }
-
     }
 }
 

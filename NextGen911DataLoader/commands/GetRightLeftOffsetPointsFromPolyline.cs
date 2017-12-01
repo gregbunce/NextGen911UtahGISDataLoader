@@ -9,7 +9,6 @@ namespace NextGen911DataLoader.commands
 {
     class GetRightLeftOffsetPointsFromPolyline
     {
-
         public static List<MapPoint> Execute(Polyline polyline)
         {
             try
@@ -31,11 +30,6 @@ namespace NextGen911DataLoader.commands
                 return null;
             }
         }
-
-
-
-
-
     }
 }
  
