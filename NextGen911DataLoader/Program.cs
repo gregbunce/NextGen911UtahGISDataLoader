@@ -38,7 +38,7 @@ namespace NextGen911DataLoader
             DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute(args[1], args[2], args[3]);
 
             // ETL Psap Data to NG911
-            ////commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);
+            commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);
 
             // ETL Roads Data to NG911
             commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath);
