@@ -14,6 +14,44 @@ namespace NextGen911DataLoader
 
         static void Main(string[] args)
         {
+            bool eltRoads = false;
+            bool etlAddresspoints = false;
+            bool etlPsaps = false;
+            bool etlMuni = false;
+
+            // Check that minimum command line args are present.
+            if (args.Length < 3)
+            {
+                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer name to elt: roads, addresspoints, psaps, muni]");
+                return;
+            }
+
+            // Check what layers the user wants to etl.
+            foreach (string s in args)
+            {
+                System.Console.WriteLine(s);
+
+                switch (s)
+                {
+                    case "roads":
+                        eltRoads = true;
+                        break;
+                    case "addresspoints":
+                        etlAddresspoints = true;
+                        break;
+                    case "psaps":
+                        etlPsaps = true;
+                        break;
+                    case "muni":
+                        etlMuni = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
+
             // Host.Initialize before constructing any objects from ArcGIS.Core
             try
             {
@@ -35,66 +73,29 @@ namespace NextGen911DataLoader
             DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute(args[1], args[2], args[3]);
 
             // ETL Psap Data to NG911
-            commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);
+            if (etlPsaps)
+            {
+                commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);
+            }
 
             // ETL Roads Data to NG911
-            commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath);
+            if (eltRoads)
+            {
+                commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath);
+            }
 
             // ETL address point to NG911
-            commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath);
+            if (etlAddresspoints)
+            {
+                commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath);
+            }
 
-
-            //using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
-            //{
-            //    using (FeatureClass sgidPsap = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.PSAPBoundaries"))
-            //    {
-            //        QueryFilter queryFilter = new QueryFilter
-            //        {
-            //            //WhereClause = "DISTRCTNAME = 'Indian Prairie School District 204'"
-            //        };
-
-            //        using (RowCursor SgidPsapCursor = sgidPsap.Search(null, true))
-            //        {
-            //            Row row = null;
-            //            while (SgidPsapCursor.MoveNext())
-            //            {
-            //                row = SgidPsapCursor.Current;
-
-            //                Console.WriteLine(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME")));
-            //            }
-
-            //        }
-
-
-
-            //    }
-            //    using (FeatureClass SgidMuni = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Municipalities"))
-            //    {
-
-
-            //    }
-            //}
 
             // Get SGID feature classes //
             //FeatureClass psap = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.PSAPBoundaries")
             //FeatureClass roads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads");
             //FeatureClass addressPnts = sgid.OpenDataset<FeatureClass>("SGID10.LOCATION.AddressPoints");
             //FeatureClass muni = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Municipalities");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             // Keep the console window open
             Console.WriteLine("Done!  Press any key to continue...");
