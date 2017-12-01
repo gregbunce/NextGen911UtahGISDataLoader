@@ -12,7 +12,7 @@ namespace NextGen911DataLoader.commands
     class PointInPolygonQuery
     {
         // pass in the point, the feature class (the polygon), and a list of fields to get values from ---- return a list of string to hold the attribute values
-        public static List<string> Execute(MapPoint mapPoint, FeatureClass polygonFeatureClass, IReadOnlyList<Field> fields, List<string> listOfFields)
+        public static List<string> Execute(MapPoint mapPoint, FeatureClass polygonFeatureClass, List<string> listOfFields)
         {
             try
             {
@@ -23,6 +23,7 @@ namespace NextGen911DataLoader.commands
                 {
                     //WhereClause = "OWNER_NAME = 'ADA IAN'",
                     //FilterGeometry = new EnvelopeBuilder(minPoint, maxPoint).ToGeometry(),
+                    FilterGeometry = mapPoint,
                     SpatialRelationship = SpatialRelationship.Intersects,
                 };
 
@@ -42,12 +43,11 @@ namespace NextGen911DataLoader.commands
                             // Add attributes to the return list.
                             for (int i = 0; i < listOfFields.Count; i++)
                             {
-                                returnAttrList.Add(feature.FindField(listOfFields[i]).ToString());
+                                returnAttrList.Add(feature.GetOriginalValue(feature.FindField(listOfFields[i])).ToString());
                             }
                         }
                     }
                 }
-
                 return returnAttrList;
             }
             catch (Exception ex)

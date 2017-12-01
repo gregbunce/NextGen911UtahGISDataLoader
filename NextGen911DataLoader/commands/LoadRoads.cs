@@ -1,4 +1,5 @@
 ﻿using ArcGIS.Core.Data;
+using ArcGIS.Core.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -31,20 +32,20 @@ namespace NextGen911DataLoader.commands
                             ng911Roads.DeleteRows(queryFilter);
 
                             // get SGID roads Feature Class.
-                            using (FeatureClass sgidRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"))
+                            using (FeatureClass sgidRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
                                     // test the etl using axtell address system b/c there's only 15 segments in this address system
                                     // CARTOCODE 15 is proposed roads
-                                    WhereClause = "ADDRSYS_L = 'ST GEORGE' and CARTOCODE <> '15'"
+                                    WhereClause = "ADDRSYS_L = 'ROCKVILLE' and CARTOCODE <> '15'"
                                 };
 
                                 // Get a Cursor of SGID road features.
-                                using (RowCursor SgidPsapCursor = sgidRoads.Search(queryFilter1, true))
+                                using (RowCursor SgidCursor = sgidRoads.Search(queryFilter1, true))
                                 {
                                     // Loop through the sgidPsap features.
-                                    while (SgidPsapCursor.MoveNext())
+                                    while (SgidCursor.MoveNext())
                                     {
                                         // Get a feature class definition for the NG911 feature class.
                                         FeatureClassDefinition featureClassDefinitionNG911 = ng911Roads.GetDefinition();
@@ -53,7 +54,7 @@ namespace NextGen911DataLoader.commands
                                         FeatureClassDefinition featureClassDefinitionSGID = sgidRoads.GetDefinition();
 
                                         //Row SgidRow = SgidPsapCursor.Current;
-                                        Feature sgidFeature = (Feature)SgidPsapCursor.Current;
+                                        Feature sgidFeature = (Feature)SgidCursor.Current;
 
                                         // Create row buffer.
                                         using (RowBuffer rowBuffer = ng911Roads.CreateRowBuffer())
@@ -63,39 +64,39 @@ namespace NextGen911DataLoader.commands
 
                                             // Create attributes for direct transfer fields (via rowBuffer). //
                                             rowBuffer["Source"] = "AGRC";
-                                            rowBuffer["StreetName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("NAME"));
-                                            rowBuffer["DateUpdated"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UPDATED"));
-                                            rowBuffer["FromAddr_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("FROMADDR_L"));
-                                            rowBuffer["ToAddr_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("TOADDR_L"));
-                                            rowBuffer["FromAddr_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("FROMADDR_R"));
-                                            rowBuffer["ToAddr_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("TOADDR_R"));
-                                            rowBuffer["Effective"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("EFFECTIVE"));
-                                            rowBuffer["Expire"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("EXPIRE"));
-                                            rowBuffer["RCL_NGUID"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UNIQUE_ID"));
-                                            rowBuffer["Parity_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PARITY_L"));
-                                            rowBuffer["Parity_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PARITY_R"));
-                                            rowBuffer["ESN_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ESN_L"));
-                                            rowBuffer["ESN_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ESN_R"));
-                                            rowBuffer["MSAGComm_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("MSAGCOMM_L"));
-                                            rowBuffer["MSAGComm_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("MSAGCOMM_R"));
+                                            rowBuffer["StreetName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME"));
+                                            rowBuffer["DateUpdated"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UPDATED"));
+                                            rowBuffer["FromAddr_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("FROMADDR_L"));
+                                            rowBuffer["ToAddr_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("TOADDR_L"));
+                                            rowBuffer["FromAddr_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("FROMADDR_R"));
+                                            rowBuffer["ToAddr_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("TOADDR_R"));
+                                            rowBuffer["Effective"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EFFECTIVE"));
+                                            rowBuffer["Expire"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EXPIRE"));
+                                            rowBuffer["RCL_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID"));
+                                            rowBuffer["Parity_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PARITY_L"));
+                                            rowBuffer["Parity_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PARITY_R"));
+                                            rowBuffer["ESN_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ESN_L"));
+                                            rowBuffer["ESN_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ESN_R"));
+                                            rowBuffer["MSAGComm_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("MSAGCOMM_L"));
+                                            rowBuffer["MSAGComm_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("MSAGCOMM_R"));
                                             rowBuffer["Country_L"] = "US";
                                             rowBuffer["Country_R"] = "US";
                                             rowBuffer["State_L"] = "UT";
                                             rowBuffer["State_R"] = "UT";
-                                            rowBuffer["IncMuni_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("INCMUNI_L"));
-                                            rowBuffer["IncMuni_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("INCMUNI_R"));
-                                            rowBuffer["UnincCom_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UNINCCOM_L"));
-                                            rowBuffer["UnincCom_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("UNINCCOM_R"));
-                                            rowBuffer["NbrhdCom_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("NBRHDCOM_L"));
-                                            rowBuffer["NbrhdCom_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("NBRHDCOM_R"));
-                                            rowBuffer["PostCode_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ZIPCODE_L"));
-                                            rowBuffer["PostCode_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ZIPCODE_R"));
-                                            rowBuffer["PostComm_L"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("POSTCOMM_L"));
-                                            rowBuffer["PostComm_R"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("POSTCOMM_R"));
-                                            rowBuffer["SpeedLimit"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("SPEED_LMT"));
+                                            rowBuffer["IncMuni_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("INCMUNI_L"));
+                                            rowBuffer["IncMuni_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("INCMUNI_R"));
+                                            rowBuffer["UnincCom_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNINCCOM_L"));
+                                            rowBuffer["UnincCom_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNINCCOM_R"));
+                                            rowBuffer["NbrhdCom_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NBRHDCOM_L"));
+                                            rowBuffer["NbrhdCom_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NBRHDCOM_R"));
+                                            //rowBuffer["PostCode_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_L"));
+                                            //rowBuffer["PostCode_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_R"));
+                                            //rowBuffer["PostComm_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_L"));
+                                            //rowBuffer["PostComm_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_R"));
+                                            rowBuffer["SpeedLimit"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SPEED_LMT"));
 
                                             // Derive RoadClass from COFIPS.
-                                            Int32  cofips = Convert.ToInt32(SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("CARTOCODE")));
+                                            Int32  cofips = Convert.ToInt32(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("CARTOCODE")));
                                             switch (cofips)
                                             {
                                                 case 1: // Interstates
@@ -159,7 +160,7 @@ namespace NextGen911DataLoader.commands
 
                                             // Derive OneWay from ONEWAY.
                                             //rowBuffer["OneWay"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ONEWAY"));
-                                            string oneWay = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ONEWAY")).ToString();
+                                            string oneWay = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ONEWAY")).ToString();
                                             switch (oneWay)
                                             {
                                                 case "0": // Two way
@@ -179,7 +180,7 @@ namespace NextGen911DataLoader.commands
 
                                             // Create attributes for fields that need to Get Domain Description value (Street Type in NG911 is fully spelled out). //
                                             // St_PosTyp //
-                                            string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "POSTTYPE", "POSTTYPE");
+                                            string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "POSTTYPE", "POSTTYPE");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -189,7 +190,7 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // St_Predir //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "PREDIR", "PREDIR");
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "PREDIR", "PREDIR");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -199,7 +200,7 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // St_PosDir //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "POSTDIR", "POSTDIR");
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "POSTDIR", "POSTDIR");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -209,7 +210,7 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // County_L //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "COUNTY_L", "COUNTY_L");
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "COUNTY_L", "COUNTY_L");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -227,7 +228,7 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // County_R //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidPsapCursor, "COUNTY_R", "COUNTY_R");
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "COUNTY_R", "COUNTY_R");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -245,10 +246,29 @@ namespace NextGen911DataLoader.commands
                                             }
 
 
-                                            // Create attributtes for fields that need a spatial intersect (point in polygon query). //
-                                            // get points
-                                            // get intersected boundaries
-                                            // test this field > County_L
+                                            // Create attributtes for fields that need a spatial intersect (point in polygon query). >>> //
+                                            // Cast the feature to a Polyline.
+                                            Polyline polyline = sgidFeature.GetShape() as Polyline;
+
+                                            // Get the right and left offset points based on the midpoint of the polyline.
+                                            List<MapPoint> mapPoints = GetRightLeftOffsetPointsFromPolyline.Execute(polyline);
+
+                                            Console.WriteLine(mapPoints[0].X.ToString() + ", " + mapPoints[0].Y.ToString());
+                                            Console.WriteLine(mapPoints[1].X.ToString() + ", " + mapPoints[1].Y.ToString());
+
+                                            // Get intersected boundaries.
+                                            List<string> listOfFields = new List<string>(new string[] {"NAME", "ZIP5"});
+                                            List<string> retunedAttrValuesLeft = PointInPolygonQuery.Execute(mapPoints[0], sgidZipCodes, listOfFields);
+                                            List<string> retunedAttrValuesRight = PointInPolygonQuery.Execute(mapPoints[1], sgidZipCodes, listOfFields);
+
+                                            Console.WriteLine(retunedAttrValuesRight[0].ToString() + ", " + retunedAttrValuesRight[1].ToString());
+
+                                            rowBuffer["PostComm_L"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
+                                            rowBuffer["PostComm_R"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
+                                            rowBuffer["PostCode_L"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
+                                            rowBuffer["PostCode_R"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
+                                            // <<< Create attributtes for fields that need a spatial intersect (point in polygon query). //
+
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911Roads.CreateRow(rowBuffer))
@@ -259,7 +279,6 @@ namespace NextGen911DataLoader.commands
                                 }
                             }
                         }
-
                     }
                 }
             }
