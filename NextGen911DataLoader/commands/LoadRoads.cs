@@ -21,7 +21,7 @@ namespace NextGen911DataLoader.commands
                     // connect to ng911 fgdb.
                     using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                     {
-                        // Get access to NG911 Roads
+                        // Get access to NG911 feature class
                         using (FeatureClass ng911Roads = NG911Utah.OpenDataset<FeatureClass>("RoadCenterlines"))
                         {
                             // delete all the existing rows
@@ -31,20 +31,19 @@ namespace NextGen911DataLoader.commands
                             };
                             ng911Roads.DeleteRows(queryFilter);
 
-                            // get SGID roads Feature Class.
+                            // get SGID Feature Classes.
                             using (FeatureClass sgidRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
-                                    // test the etl using axtell address system b/c there's only 15 segments in this address system
                                     // CARTOCODE 15 is proposed roads
                                     WhereClause = "ADDRSYS_L = 'ROCKVILLE' and CARTOCODE <> '15'"
                                 };
 
-                                // Get a Cursor of SGID road features.
+                                // Get a Cursor of SGID features.
                                 using (RowCursor SgidCursor = sgidRoads.Search(queryFilter1, true))
                                 {
-                                    // Loop through the sgidPsap features.
+                                    // Loop through the sgid features.
                                     while (SgidCursor.MoveNext())
                                     {
                                         // Get a feature class definition for the NG911 feature class.
@@ -53,7 +52,7 @@ namespace NextGen911DataLoader.commands
                                         // Get a feature class definition for the SGID feature class
                                         FeatureClassDefinition featureClassDefinitionSGID = sgidRoads.GetDefinition();
 
-                                        //Row SgidRow = SgidPsapCursor.Current;
+                                        //Row SgidRow = SgidCursor.Current;
                                         Feature sgidFeature = (Feature)SgidCursor.Current;
 
                                         // Create row buffer.
