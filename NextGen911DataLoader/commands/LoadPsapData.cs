@@ -56,16 +56,28 @@ namespace NextGen911DataLoader.commands
                                             // Create geometry (via rowBuffer).
                                             rowBuffer[featureClassDefinition.GetShapeField()] = sgidFeature.GetShape();
 
+
                                             // Create attributes (via rowBuffer).
-                                            rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
+                                            rowBuffer["Source"] = "AGRC";
+                                            //rowBuffer["DateUpdate"] = "";
+                                            //rowBuffer["Effective"] = "";
+                                            //rowBuffer["Expire"] = "";
+                                            //rowBuffer["ES_NGUID"] = "";
                                             rowBuffer["State"] = "UT";
+                                            //rowBuffer["Agency_ID"] = "";
+                                            //rowBuffer["ServiceURI"] = "";
+                                            //rowBuffer["ServiceURN"] = "";
+                                            //rowBuffer["ServiceNum"] = "";
+                                            //rowBuffer["AVcard_URI"] = "";
+                                            rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
+
 
                                             //// DOMAIN VALUES >>>
                                             ////IReadOnlyList<Field> fields = featureClassDefinition.GetFields();
 
                                             //int NG911_Field = featureClassDefinition.FindField("State");
                                             //Field NG911_NameField = featureClassDefinition.GetFields()[NG911_Field];
-                                           
+
                                             //Domain domain = NG911_NameField.GetDomain();
                                             //if (domain is CodedValueDomain)
                                             //{
@@ -112,3 +124,19 @@ namespace NextGen911DataLoader.commands
 //ServiceNum is a type of String with a length of 15
 //AVcard_URI is a type of String with a length of 254
 //DsplayName is a type of String with a length of 60
+
+
+// SGDI psap fields //
+//COUNTYNBR is a type of String with a length of 2
+//PSAP_JURIS is a type of String with a length of 30
+//PSAP_NAME is a type of String with a length of 100
+//COUNTY is a type of String with a length of 50
+//FIPS is a type of String with a length of 5
+//ECATSID is a type of String with a length of 5
+//COLOR4 is a type of SmallInteger with a length of 2
+//PHONE_NUMBER is a type of String with a length of 14
+//DPS_PSAP_NAME is a type of String with a length of 100
+//TEXT911 is a type of String with a length of 1
+
+
+

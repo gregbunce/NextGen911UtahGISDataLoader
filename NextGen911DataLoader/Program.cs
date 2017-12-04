@@ -20,7 +20,7 @@ namespace NextGen911DataLoader
             bool etlMuni = false;
 
             // Check that minimum command line args are present.
-            if (args.Length < 3)
+            if (args.Length < 4)
             {
                 Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer name to elt: roads, addresspoints, psaps, muni]");
                 return;
@@ -49,8 +49,6 @@ namespace NextGen911DataLoader
                         break;
                 }
             }
-
-
 
             // Host.Initialize before constructing any objects from ArcGIS.Core
             try
