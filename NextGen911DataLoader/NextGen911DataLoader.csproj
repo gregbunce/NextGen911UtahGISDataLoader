@@ -56,6 +56,7 @@
     <Compile Include="commands\LoadPsapData.cs" />
     <Compile Include="commands\LoadRoads.cs" />
     <Compile Include="commands\PointInPolygonQuery.cs" />
+    <Compile Include="commands\ReprojectPoint.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

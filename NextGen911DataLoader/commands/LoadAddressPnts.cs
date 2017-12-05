@@ -61,15 +61,76 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
 
                                             // Create attributes for direct transfer fields (via rowBuffer). //
-                                            rowBuffer["Source"] = "AGRC";
+                                            rowBuffer["Source"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddSource"));
                                             rowBuffer["DateUpdate"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("LoadDate"));
                                             //rowBuffer["Effective"] = "";
                                             //rowBuffer["Expire"] = "";
-                                            //rowBuffer["Site_NGUID"] = "";
+                                            rowBuffer["Site_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UTAddPtID"));
                                             rowBuffer["Country"] = "US";
                                             rowBuffer["State"] = "UT";
-
+                                            //rowBuffer["AddCode"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["AddDataURI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["Inc_Muni"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("City"));
+                                            rowBuffer["Uninc_Comm"] = "";
+                                            //rowBuffer["Nbrhd_Comm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["AddNum_Pre"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["Add_Number"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum"));
+                                            rowBuffer["AddNum_Suf"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNumSuffix"));
+                                            //rowBuffer["St_PreMod"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["St_PreTyp"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["St_PreSep"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["StreetName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("StreetName"));
+                                            //rowBuffer["St_PosMod"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["LSt_PreDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["LSt_Name"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["LSt_Type"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["LStPosDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["ESN"] = "0";
+                                            //rowBuffer["MSAGComm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["Post_Comm"] = "";
+                                            rowBuffer["Post_Code"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZipCode"));            
+                                            //rowBuffer["Post_Code4"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["Building"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("Building"));
+                                            //rowBuffer["Floor"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["Unit"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UnitID"));
+                                            //rowBuffer["Room"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["Seat"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["Addtl_Loc"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddSystem"));
+                                            //rowBuffer["LandmkName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            //rowBuffer["Mile_Post"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["Placement"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation"));
+                                            MapPoint mapPoint = sgidFeature.GetShape() as MapPoint;
+                                            rowBuffer["Long"] = mapPoint.Y;
+                                            rowBuffer["Lat"] = mapPoint.X;
+                                            //rowBuffer["Elev"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+
+
+
+                                            //AddSystem is a type of String with a length of 40
+                                            //UTAddPtID is a type of String with a length of 140
+                                            //FullAdd is a type of String with a length of 100
+                                            //AddNum is a type of String with a length of 10
+                                            //AddNumSuffix is a type of String with a length of 4
+                                            //PrefixDir is a type of String with a length of 1
+                                            //StreetName is a type of String with a length of 50
+                                            //StreetType is a type of String with a length of 4
+                                            //SuffixDir is a type of String with a length of 1
+                                            //LandmarkName is a type of String with a length of 75
+                                            //Building is a type of String with a length of 75
+                                            //UnitType is a type of String with a length of 20
+                                            //UnitID is a type of String with a length of 20
+                                            //City is a type of String with a length of 30
+                                            //ZipCode is a type of String with a length of 5
+                                            //CountyID is a type of String with a length of 15
+                                            //State is a type of String with a length of 2
+                                            //PtLocation is a type of String with a length of 30
+                                            //PtType is a type of String with a length of 15
+                                            //Structure is a type of String with a length of 10
+                                            //ParcelID is a type of String with a length of 30
+                                            //AddSource is a type of String with a length of 30
+                                            //LoadDate is a type of Date with a length of 36
+                                            //USNG is a type of String with a length of 10
+
 
 
                                             //// Derive OneWay from ONEWAY.
@@ -93,7 +154,7 @@ namespace NextGen911DataLoader.commands
 
 
                                             // Create attributes for fields that need to Get Domain Description value (Street Type in NG911 is fully spelled out). //
-                                            // County_L //
+                                            // CountyID //
                                             string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "CountyID", "CountyID");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
@@ -110,6 +171,37 @@ namespace NextGen911DataLoader.commands
                                                 }
                                                 rowBuffer["County"] = countyName.ToUpper();
                                             }
+
+                                            // St_PosTyp //
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "StreetType", "StreetType");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
+                                            {
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                rowBuffer["St_PosTyp"] = codedDomainValue.ToUpper();
+                                            }
+
+                                            // St_PreDir //
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "PrefixDir", "PrefixDir");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
+                                            {
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                rowBuffer["St_PreDir"] = codedDomainValue.ToUpper();
+                                            }
+
+                                            // St_PosDir //
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "SuffixDir", "SuffixDir");
+                                            codedDomainValue.Trim();
+                                            if (codedDomainValue != "")
+                                            {
+                                                // Proper case.
+                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                                rowBuffer["St_PosDir"] = codedDomainValue.ToUpper();
+                                            }
+
 
 
                                             //// Create attributtes for fields that need a spatial intersect (point in polygon query). >>> //
