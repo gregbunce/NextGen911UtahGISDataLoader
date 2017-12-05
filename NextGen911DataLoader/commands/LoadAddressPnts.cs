@@ -100,8 +100,9 @@ namespace NextGen911DataLoader.commands
                                             //rowBuffer["Mile_Post"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["Placement"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation"));
                                             MapPoint mapPoint = sgidFeature.GetShape() as MapPoint;
-                                            rowBuffer["Long"] = mapPoint.Y;
-                                            rowBuffer["Lat"] = mapPoint.X;
+                                            MapPoint mapPointReprojected = ReprojectPoint.Execute(mapPoint, 4326);
+                                            rowBuffer["Long"] = mapPointReprojected.X;
+                                            rowBuffer["Lat"] = mapPointReprojected.Y;
                                             //rowBuffer["Elev"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
 
 
