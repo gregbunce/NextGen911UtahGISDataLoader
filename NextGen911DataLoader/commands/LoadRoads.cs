@@ -91,10 +91,10 @@ namespace NextGen911DataLoader.commands
                                                 rowBuffer["UnincCom_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNINCCOM_R"));
                                                 rowBuffer["NbrhdCom_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NBRHDCOM_L"));
                                                 rowBuffer["NbrhdCom_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NBRHDCOM_R"));
-                                                //rowBuffer["PostCode_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_L"));
-                                                //rowBuffer["PostCode_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_R"));
-                                                //rowBuffer["PostComm_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_L"));
-                                                //rowBuffer["PostComm_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_R"));
+                                                rowBuffer["PostCode_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_L"));
+                                                rowBuffer["PostCode_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_R"));
+                                                rowBuffer["PostComm_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_L"));
+                                                rowBuffer["PostComm_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_R"));
                                                 rowBuffer["SpeedLimit"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SPEED_LMT"));
 
                                                 // Derive RoadClass from COFIPS.
@@ -248,23 +248,24 @@ namespace NextGen911DataLoader.commands
                                                 }
 
 
-                                                // >>> Create attributtes for fields that need a spatial intersect (point in polygon query).
-                                                // Cast the feature to a Polyline.
-                                                Polyline polyline = sgidFeature.GetShape() as Polyline;
+                                                // SPATIAL QUERIES //
+                                                ////// >>> Create attributtes for fields that need a spatial intersect (point in polygon query).
+                                                ////// Cast the feature to a Polyline.
+                                                ////Polyline polyline = sgidFeature.GetShape() as Polyline;
 
-                                                // Get the right and left offset points based on the midpoint of the polyline.
-                                                List<MapPoint> mapPoints = GetRightLeftOffsetPointsFromPolyline.Execute(polyline);
+                                                ////// Get the right and left offset points based on the midpoint of the polyline.
+                                                ////List<MapPoint> mapPoints = GetRightLeftOffsetPointsFromPolyline.Execute(polyline);
 
-                                                // Get intersected boundaries.
-                                                List<string> listOfFields = new List<string>(new string[] { "NAME", "ZIP5" });
-                                                List<string> retunedAttrValuesLeft = PointInPolygonQuery.Execute(mapPoints[0], sgidZipCodes, listOfFields);
-                                                List<string> retunedAttrValuesRight = PointInPolygonQuery.Execute(mapPoints[1], sgidZipCodes, listOfFields);
+                                                ////// Get intersected boundaries.
+                                                ////List<string> listOfFields = new List<string>(new string[] { "NAME", "ZIP5" });
+                                                ////List<string> retunedAttrValuesLeft = PointInPolygonQuery.Execute(mapPoints[0], sgidZipCodes, listOfFields);
+                                                ////List<string> retunedAttrValuesRight = PointInPolygonQuery.Execute(mapPoints[1], sgidZipCodes, listOfFields);
 
-                                                rowBuffer["PostComm_L"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
-                                                rowBuffer["PostComm_R"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
-                                                rowBuffer["PostCode_L"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
-                                                rowBuffer["PostCode_R"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
-                                                // Create attributtes for fields that need a spatial intersect (point in polygon query). <<<
+                                                ////rowBuffer["PostComm_L"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
+                                                ////rowBuffer["PostComm_R"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
+                                                ////rowBuffer["PostCode_L"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
+                                                ////rowBuffer["PostCode_R"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
+                                                ////// Create attributtes for fields that need a spatial intersect (point in polygon query). <<<
 
 
                                                 // create the row, with attributes and geometry via rowBuffer, in the ng911 database

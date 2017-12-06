@@ -87,8 +87,8 @@ namespace NextGen911DataLoader.commands
                                             //rowBuffer["LStPosDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["ESN"] = "0";
                                             //rowBuffer["MSAGComm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Post_Comm"] = "";
-                                            rowBuffer["Post_Code"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZipCode"));            
+                                            ////rowBuffer["Post_Comm"] = "";
+                                            ////rowBuffer["Post_Code"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZipCode"));            
                                             //rowBuffer["Post_Code4"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["Building"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("Building"));
                                             //rowBuffer["Floor"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
@@ -253,24 +253,14 @@ namespace NextGen911DataLoader.commands
                                             }
 
 
+                                            // >>> Create attributtes for fields that need a spatial intersect (point in polygon query).
+                                            // Get intersected boundaries.
+                                            List<string> listOfFields = new List<string>(new string[] { "NAME", "ZIP5" });
+                                            List<string> retunedAttrValues = PointInPolygonQuery.Execute(mapPoint, sgidZipCodes, listOfFields);
 
-                                            //// Create attributtes for fields that need a spatial intersect (point in polygon query). >>> //
-                                            //// Cast the feature to a Polyline.
-                                            //Polyline polyline = sgidFeature.GetShape() as Polyline;
-
-                                            //// Get the right and left offset points based on the midpoint of the polyline.
-                                            //List<MapPoint> mapPoints = GetRightLeftOffsetPointsFromPolyline.Execute(polyline);
-
-                                            //// Get intersected boundaries.
-                                            //List<string> listOfFields = new List<string>(new string[] { "NAME", "ZIP5" });
-                                            //List<string> retunedAttrValuesLeft = PointInPolygonQuery.Execute(mapPoints[0], sgidZipCodes, listOfFields);
-                                            //List<string> retunedAttrValuesRight = PointInPolygonQuery.Execute(mapPoints[1], sgidZipCodes, listOfFields);
-
-                                            //rowBuffer["PostComm_L"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
-                                            //rowBuffer["PostComm_R"] = retunedAttrValuesLeft[0]; // 0 = NAME ; 1 = ZIP5
-                                            //rowBuffer["PostCode_L"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
-                                            //rowBuffer["PostCode_R"] = retunedAttrValuesLeft[1]; // 0 = NAME ; 1 = ZIP5
-                                            //// <<< Create attributtes for fields that need a spatial intersect (point in polygon query). //
+                                            rowBuffer["Post_Comm"] = retunedAttrValues[0]; // 0 = NAME ; 1 = ZIP5
+                                            rowBuffer["Post_Code"] = retunedAttrValues[1]; // 0 = NAME ; 1 = ZIP5
+                                            // Create attributtes for fields that need a spatial intersect (point in polygon query). <<<
 
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database

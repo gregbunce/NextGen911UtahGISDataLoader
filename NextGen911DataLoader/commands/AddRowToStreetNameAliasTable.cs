@@ -25,7 +25,7 @@ namespace NextGen911DataLoader.commands
                     rowBuffer["RCL_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID"));
                     rowBuffer["ASt_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID")).ToString() + "_" + aliasType;
 
-                    // Populate fields that need domain description values from SGID //
+                    // Populate common fields that need domain description values from SGID //
                     // ASt_PosDir //
                     string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, aliasType + "_POSTDIR", aliasType + "_POSTDIR");
                     codedDomainValue.Trim();
@@ -38,11 +38,11 @@ namespace NextGen911DataLoader.commands
                     }
 
 
-                    // Populate the fields that are specific to alpha or numeric alias street types.
+                    // Populate the fields that are specific to either alpha or numeric alias street types.
                     if (aliasType == "AN")
                     {
                         // Populate the PreDir from the primary street.
-                        //rowBuffer["ASt_PreDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PREDIR"));
+                        // Get domain desc value from SGID.
                         codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "PREDIR", "PREDIR");
                         codedDomainValue.Trim();
                         if (codedDomainValue != "")
@@ -56,6 +56,7 @@ namespace NextGen911DataLoader.commands
                     else if (aliasType == "A1" | aliasType == "A2")
                     {
                         // Populate the PostType field, which is specific to only alpha-named roads.
+                        // Get domain desc value from SGID.
                         codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, aliasType + "_POSTTYPE", aliasType + "_POSTTYPE");
                         codedDomainValue.Trim();
                         if (codedDomainValue != "")
@@ -69,6 +70,8 @@ namespace NextGen911DataLoader.commands
                         // Check if A*_PREDIR is populated, if not then use PREDIR.
                         if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(aliasType + "_PREDIR")).ToString() == "" | SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(aliasType + "_PREDIR")) is DBNull)
                         {
+                            // Use SGID PREDIR - becuase A*_POSTDIR is empty.
+                            // Get domain desc value from SGID.
                             codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "PREDIR", "PREDIR");
                             codedDomainValue.Trim();
                             if (codedDomainValue != "")
@@ -81,6 +84,8 @@ namespace NextGen911DataLoader.commands
                         }
                         else
                         {
+                            // Use SGID A*_POSTDIR.
+                            // Get domain desc value from SGID.
                             codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, aliasType + "_POSTDIR", aliasType + "_POSTDIR");
                             codedDomainValue.Trim();
                             if (codedDomainValue != "")
