@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ArcGIS.Core;
 using ArcGIS.Core.Data;
+using System.IO;
 
 namespace NextGen911DataLoader
 {
@@ -26,29 +27,47 @@ namespace NextGen911DataLoader
                 return;
             }
 
+            // Setup a file stream and a stream writer to write out the log and any odd unexpected stuff that happens.
+            string path = @"C:\temp\NextGen911DataLoaderLog" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + ".txt";
+            FileStream fileStream = new FileStream(path, FileMode.Create);
+            StreamWriter streamWriter = new StreamWriter(fileStream);
+            streamWriter.WriteLine("Started at: " + DateTime.Now.ToString("yyyy-MM-dd-HH-mm"));
+            streamWriter.WriteLine("Feature Classes that were ETL'd:");
+
             // Check what layers the user wants to etl.
             foreach (string s in args)
             {
                 System.Console.WriteLine(s);
 
-                switch (s)
+                switch (s.ToUpper()) // make the argument upper to allow the user to use any casing.
                 {
-                    case "roads":
+                    case "ROADS":
+                        streamWriter.WriteLine(s);
                         eltRoads = true;
                         break;
-                    case "addresspoints":
+                    case "ADDRESSPOINTS":
+                        streamWriter.WriteLine(s);
                         etlAddresspoints = true;
                         break;
-                    case "psaps":
+                    case "PSAPS":
+                        streamWriter.WriteLine(s);
                         etlPsaps = true;
                         break;
-                    case "muni":
+                    case "MUNI":
+                        streamWriter.WriteLine(s);
                         etlMuni = true;
                         break;
                     default:
                         break;
                 }
             }
+
+            // Write out the field headings.
+            streamWriter.WriteLine("FeatureType" + "," + "SGID_OID" + "," + "NextGen_OID" + "," + "Notes");
+
+
+
+
 
             // Host.Initialize before constructing any objects from ArcGIS.Core
             try
@@ -98,6 +117,10 @@ namespace NextGen911DataLoader
             // Keep the console window open
             Console.WriteLine("Done!  Press any key to continue...");
             Console.Read();
+
+            //close the stream writer
+            streamWriter.WriteLine("Finshed at: " + DateTime.Now.ToString("yyyy-MM-dd-HH-mm"));
+            streamWriter.Close();
         }
     }
 }
