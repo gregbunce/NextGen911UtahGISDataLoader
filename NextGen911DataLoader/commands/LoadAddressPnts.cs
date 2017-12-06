@@ -98,7 +98,8 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["Addtl_Loc"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddSystem"));
                                             //rowBuffer["LandmkName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["Mile_Post"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Placement"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation"));
+                                            //rowBuffer["Place_Type"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType"));
+                                            //rowBuffer["Placement"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation"));
                                             MapPoint mapPoint = sgidFeature.GetShape() as MapPoint;
                                             MapPoint mapPointReprojected = ReprojectPoint.Execute(mapPoint, 4326);
                                             rowBuffer["Long"] = mapPointReprojected.X;
@@ -106,52 +107,100 @@ namespace NextGen911DataLoader.commands
                                             //rowBuffer["Elev"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
 
 
+                                            // Derive Place_Type from PtType.
+                                            string placeType = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType")).ToString();
+                                            switch (placeType)
+                                            {
+                                                case "Agricultural":
+                                                    rowBuffer["Place_Type"] = "";
+                                                    break;
+                                                case "BASE ADDRESS":
+                                                    rowBuffer["Place_Type"] = "Government-base";
+                                                    break;
+                                                case "Business":
+                                                    rowBuffer["Place_Type"] = "";
+                                                    break;
+                                                case "Commercial":
+                                                    rowBuffer["Place_Type"] = "";
+                                                    break;
+                                                case "Education":
+                                                    rowBuffer["Place_Type"] = "School";
+                                                    break;
+                                                case "Government":
+                                                    rowBuffer["Place_Type"] = "Government";
+                                                    break;
+                                                case "Industrial":
+                                                    rowBuffer["Place_Type"] = "Industrial";
+                                                    break;
+                                                case "Med":
+                                                    rowBuffer["Place_Type"] = "Hospital";
+                                                    break;
+                                                case "Mixed Use":
+                                                    rowBuffer["Place_Type"] = "";
+                                                    break;
+                                                case "OTH":
+                                                    rowBuffer["Place_Type"] = "Other";
+                                                    break;
+                                                case "Other":
+                                                    rowBuffer["Place_Type"] = "Other";
+                                                    break;
+                                                case "Residential":
+                                                    rowBuffer["Place_Type"] = "Residence";
+                                                    break;
+                                                case "Unknown":
+                                                    rowBuffer["Place_Type"] = "Unknown";
+                                                    break;
+                                                case "Vacant":
+                                                    rowBuffer["Place_Type"] = "";
+                                                    break;
+                                                default:
+                                                    if (placeType != "")
+                                                    {
+                                                        rowBuffer["Place_Type"] = "N/A";
+                                                        // write out an error report as there may be a new domain
+                                                    }
+                                                    break;
+                                            }
 
-                                            //AddSystem is a type of String with a length of 40
-                                            //UTAddPtID is a type of String with a length of 140
-                                            //FullAdd is a type of String with a length of 100
-                                            //AddNum is a type of String with a length of 10
-                                            //AddNumSuffix is a type of String with a length of 4
-                                            //PrefixDir is a type of String with a length of 1
-                                            //StreetName is a type of String with a length of 50
-                                            //StreetType is a type of String with a length of 4
-                                            //SuffixDir is a type of String with a length of 1
-                                            //LandmarkName is a type of String with a length of 75
-                                            //Building is a type of String with a length of 75
-                                            //UnitType is a type of String with a length of 20
-                                            //UnitID is a type of String with a length of 20
-                                            //City is a type of String with a length of 30
-                                            //ZipCode is a type of String with a length of 5
-                                            //CountyID is a type of String with a length of 15
-                                            //State is a type of String with a length of 2
-                                            //PtLocation is a type of String with a length of 30
-                                            //PtType is a type of String with a length of 15
-                                            //Structure is a type of String with a length of 10
-                                            //ParcelID is a type of String with a length of 30
-                                            //AddSource is a type of String with a length of 30
-                                            //LoadDate is a type of Date with a length of 36
-                                            //USNG is a type of String with a length of 10
-
-
-
-                                            //// Derive OneWay from ONEWAY.
-                                            ////rowBuffer["OneWay"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ONEWAY"));
-                                            //string oneWay = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ONEWAY")).ToString();
-                                            //switch (oneWay)
-                                            //{
-                                            //    case "0": // Two way
-                                            //        rowBuffer["OneWay"] = "B";
-                                            //        break;
-                                            //    case "1": // One way Direction of Arc
-                                            //        rowBuffer["OneWay"] = "FT";
-                                            //        break;
-                                            //    case "2": // One way Opposite Direction of Arc
-                                            //        rowBuffer["OneWay"] = "TF";
-                                            //        break;
-                                            //    default:
-                                            //        //rowBuffer["OneWay"] = "N/A";
-                                            //        break;
-                                            //}
+                                            // Derive Placement from PtLocation.
+                                            string pntLocation = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation")).ToString();
+                                            switch (pntLocation)
+                                            {
+                                                case "Centroid":
+                                                    rowBuffer["Placement"] = "";
+                                                    break;
+                                                case "Driveway Entrance":
+                                                    rowBuffer["Placement"] = "Property Access";
+                                                    break;
+                                                case "Geocoded":
+                                                    rowBuffer["Placement"] = "Geocoding";
+                                                    break;
+                                                case "Other":
+                                                    rowBuffer["Place_Type"] = "";
+                                                    break;
+                                                case "Parcel Centroid":
+                                                    rowBuffer["Placement"] = "Parcel";
+                                                    break;
+                                                case "Primary Structure Entrance":
+                                                    rowBuffer["Placement"] = "Structure";
+                                                    break;
+                                                case "Residential":
+                                                    rowBuffer["Placement"] = "Site";
+                                                    break;
+                                                case "Rooftop":
+                                                    rowBuffer["Placement"] = "";
+                                                    break;
+                                                case "Unknown":
+                                                    rowBuffer["Placement"] = "Unknown";
+                                                    break;
+                                                default:
+                                                    if (pntLocation != "")
+                                                    {
+                                                        rowBuffer["Placement"] = "N/A";
+                                                        // write out an error report as there may be a new domain
+                                                    }
+                                                    break;
+                                            }
 
 
                                             // Create attributes for fields that need to Get Domain Description value (Street Type in NG911 is fully spelled out). //

@@ -59,16 +59,16 @@ namespace NextGen911DataLoader.commands
 
                                             // Create attributes (via rowBuffer).
                                             rowBuffer["Source"] = "AGRC";
-                                            //rowBuffer["DateUpdate"] = "";
+                                            rowBuffer["DateUpdate"] = DateTime.Now; // this needs to be the updated date in the sgid database, but we don't have one yet. 
                                             //rowBuffer["Effective"] = "";
                                             //rowBuffer["Expire"] = "";
-                                            //rowBuffer["ES_NGUID"] = "";
+                                            rowBuffer["ES_NGUID"] = "";
                                             rowBuffer["State"] = "UT";
-                                            //rowBuffer["Agency_ID"] = "";
-                                            //rowBuffer["ServiceURI"] = "";
-                                            //rowBuffer["ServiceURN"] = "";
+                                            rowBuffer["Agency_ID"] = "";
+                                            rowBuffer["ServiceURI"] = "";
+                                            rowBuffer["ServiceURN"] = "";
                                             //rowBuffer["ServiceNum"] = "";
-                                            //rowBuffer["AVcard_URI"] = "";
+                                            rowBuffer["AVcard_URI"] = "";
                                             rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
 
 

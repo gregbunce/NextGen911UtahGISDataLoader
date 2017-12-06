@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="commands\AddRowToStreetNameAliasTable.cs" />
     <Compile Include="commands\ConnectToSGID.cs" />
     <Compile Include="commands\GetDomainValue.cs" />
     <Compile Include="commands\GetRightLeftOffsetPointsFromPolyline.cs" />
