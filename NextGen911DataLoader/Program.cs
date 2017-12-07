@@ -64,7 +64,7 @@ namespace NextGen911DataLoader
 
             // Write out the field headings.
             streamWriter.WriteLine();
-            streamWriter.WriteLine("ERROR REPORT...");
+            streamWriter.WriteLine("WARNING DATA ADJUSTED REPORT...");
             streamWriter.WriteLine("_______________________________________");
             streamWriter.WriteLine("FeatureType" + "," + "SGID_OID" + "," + "NextGen_OID" + "," + "Notes");
 

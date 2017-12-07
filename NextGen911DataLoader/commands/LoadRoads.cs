@@ -35,7 +35,9 @@ namespace NextGen911DataLoader.commands
                                 {
                                     WhereClause = "OBJECTID > 0"
                                 };
+                                // Delete all rows in the RoadsCenterline feature class.
                                 ng911Roads.DeleteRows(queryFilter);
+                                // Delete all rows in the Street Name Alternate Names table. 
                                 ng911StreetNameAliasTable.DeleteRows(queryFilter);
 
                                 // get SGID Feature Classes.
@@ -44,7 +46,7 @@ namespace NextGen911DataLoader.commands
                                     QueryFilter queryFilter1 = new QueryFilter
                                     {
                                         // CARTOCODE 15 is proposed roads
-                                        WhereClause = "ADDRSYS_L = 'MOAB' and CARTOCODE <> '15'"
+                                        WhereClause = "ADDRSYS_L = 'SALT LAKE CITY' and CARTOCODE <> '15'"
                                     };
 
                                     // Get a Cursor of SGID features.
@@ -314,6 +316,8 @@ namespace NextGen911DataLoader.commands
                 Console.WriteLine("There was an error with LoadRoads method. " +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
 
+                streamWriter.WriteLine();
+                streamWriter.WriteLine("_______________________________________");
                 streamWriter.WriteLine("There was an error with LoadAddressPnts method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }

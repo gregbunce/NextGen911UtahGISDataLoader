@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace NextGen911DataLoader.commands
@@ -33,6 +34,7 @@ namespace NextGen911DataLoader.commands
                             {
                                 WhereClause = "OBJECTID > 0"
                             };
+                            // Delete all rows in the AddressPoints feature class.
                             ng911AddrPnts.DeleteRows(queryFilter);
 
                             // get SGID Feature Classes.
@@ -40,7 +42,7 @@ namespace NextGen911DataLoader.commands
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
-                                    WhereClause = "AddSystem = 'MOAB'"
+                                    WhereClause = "AddSystem = 'SALT LAKE CITY' and StreetName = 'ELIZABETH'"
                                 };
 
                                 // Get a Cursor of SGID features.
@@ -78,7 +80,22 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["Uninc_Comm"] = "";
                                             //rowBuffer["Nbrhd_Comm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["AddNum_Pre"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Add_Number"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum"));
+
+                                            // Check for alpha characters in the AddNum field.
+                                            if (Regex.IsMatch(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum")).ToString(), ".*?[a-zA-Z].*?"))
+                                            {
+                                                // Remove the number and log the procedure
+                                                string addNumAlphaRemoved = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum")).ToString();
+                                                addNumAlphaRemoved = Regex.Replace(addNumAlphaRemoved, "[^0-9.]", "");
+                                    
+                                                rowBuffer["Add_Number"] = addNumAlphaRemoved;
+                                                streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "Removed alpha character in AddNum");
+                                            }
+                                            else
+                                            {
+                                                rowBuffer["Add_Number"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum"));
+                                            }
+
                                             rowBuffer["AddNum_Suf"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNumSuffix"));
                                             //rowBuffer["St_PreMod"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["St_PreTyp"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
@@ -167,7 +184,6 @@ namespace NextGen911DataLoader.commands
                                                                 rowBuffer["Place_Type"] = "N/A";
                                                                 // write out an error report as there may be a new domain
                                                                 streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "SGID Domain for PtType is not recognized. Possibly new?");
-                     
                                                             }
                                                             break;
                                                     }
@@ -286,7 +302,8 @@ namespace NextGen911DataLoader.commands
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911AddrPnts.CreateRow(rowBuffer))
                                             {
-                                                Console.WriteLine("AddrPnt" + addressTableCreateRowCount);
+                                                Console.WriteLine("AddrPntRowCount: " + addressTableCreateRowCount);
+                                                Console.WriteLine("AddrPntSgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                                 addressTableCreateRowCount = addressTableCreateRowCount + 1;
                                             }
                                         }
@@ -302,6 +319,8 @@ namespace NextGen911DataLoader.commands
                 Console.WriteLine("There was an error with LoadAddressPnts method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
 
+                streamWriter.WriteLine();
+                streamWriter.WriteLine("_______________________________________");
                 streamWriter.WriteLine("There was an error with LoadAddressPnts method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
