@@ -3,6 +3,7 @@ using ArcGIS.Core.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace NextGen911DataLoader.commands
 {
     class LoadRoads
     {
-        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath)
+        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter)
         {
             try
             {
@@ -24,6 +25,9 @@ namespace NextGen911DataLoader.commands
                         // Get access to NG911 feature class
                         using (FeatureClass ng911Roads = NG911Utah.OpenDataset<FeatureClass>("RoadCenterlines"))
                         {
+                            // Create a row count bean-counter.
+                            Int32 RoadCenterlineCreateRowCount = 1;
+
                             using (Table ng911StreetNameAliasTable = NG911Utah.OpenDataset<Table>("StreetNameAliasTable"))
                             {
                                 // delete all the existing rows
@@ -40,7 +44,7 @@ namespace NextGen911DataLoader.commands
                                     QueryFilter queryFilter1 = new QueryFilter
                                     {
                                         // CARTOCODE 15 is proposed roads
-                                        WhereClause = "ADDRSYS_L = 'ROCKVILLE' and CARTOCODE <> '15'"
+                                        WhereClause = "ADDRSYS_L = 'MOAB' and CARTOCODE <> '15'"
                                     };
 
                                     // Get a Cursor of SGID features.
@@ -271,6 +275,8 @@ namespace NextGen911DataLoader.commands
                                                 // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                                 using (Row row = ng911Roads.CreateRow(rowBuffer))
                                                 {
+                                                    Console.WriteLine("RoadCenterline" + RoadCenterlineCreateRowCount);
+                                                    RoadCenterlineCreateRowCount = RoadCenterlineCreateRowCount + 1;
                                                 }
                                             }
 
@@ -279,19 +285,19 @@ namespace NextGen911DataLoader.commands
                                             if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AN_NAME")).ToString() != "")
                                             {
                                                 // Add alias street name to StreetNameAliasTable.
-                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "AN");
+                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "AN", streamWriter);
                                             }
                                             // Check if the sgid road segment contains alias names in the A1_NAME.
                                             if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("A1_NAME")).ToString() != "")
                                             {
                                                 // Add alias street name to StreetNameAliasTable.
-                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A1");
+                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A1", streamWriter);
                                             }
                                             // Check if the sgid road segment contains alias names in the A2_NAME.
                                             if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("A2_NAME")).ToString() != "")
                                             {
                                                 // Add alias street name to StreetNameAliasTable.
-                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A2");
+                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A2", streamWriter);
                                             }
                                             // ALIAS STREET NAME TABLE <<<
 
@@ -306,6 +312,9 @@ namespace NextGen911DataLoader.commands
             catch (Exception ex)
             {
                 Console.WriteLine("There was an error with LoadRoads method. " +
+                ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
+
+                streamWriter.WriteLine("There was an error with LoadAddressPnts method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }

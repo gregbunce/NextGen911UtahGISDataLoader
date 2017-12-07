@@ -1,6 +1,7 @@
 ﻿using ArcGIS.Core.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace NextGen911DataLoader.commands
 {
     class AddRowToStreetNameAliasTable
     {
-        public static void Execute(FeatureClassDefinition featureClassDefinitionSGID, Table ng911StreetNameAliasTable, RowCursor SgidCursor, string aliasType)
+        public static void Execute(FeatureClassDefinition featureClassDefinitionSGID, Table ng911StreetNameAliasTable, RowCursor SgidCursor, string aliasType, StreamWriter streamWriter)
         {
             try
             {
@@ -68,7 +69,7 @@ namespace NextGen911DataLoader.commands
                         }
 
                         // Check if A*_PREDIR is populated, if not then use PREDIR.
-                        if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(aliasType + "_PREDIR")).ToString() == "" | SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(aliasType + "_PREDIR")) is DBNull)
+                        if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(aliasType + "_PREDIR")).ToString() == "" | SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(aliasType + "_PREDIR")) == null)
                         {
                             // Use SGID PREDIR - becuase A*_POSTDIR is empty.
                             // Get domain desc value from SGID.
@@ -107,6 +108,9 @@ namespace NextGen911DataLoader.commands
             catch (Exception ex)
             {
                 Console.WriteLine("There was an error with AddRowToStreetNameAliasTable method. " +
+                ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
+
+                streamWriter.WriteLine("There was an error with LoadAddressPnts method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }

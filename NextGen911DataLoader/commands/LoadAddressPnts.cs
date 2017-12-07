@@ -3,6 +3,7 @@ using ArcGIS.Core.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace NextGen911DataLoader.commands
 {
     class LoadAddressPnts
     {
-        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath)
+        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter)
         {
             try
             {
@@ -24,6 +25,9 @@ namespace NextGen911DataLoader.commands
                         // Get access to NG911 feature class
                         using (FeatureClass ng911AddrPnts = NG911Utah.OpenDataset<FeatureClass>("AddressPoints"))
                         {
+                            // Create a row count bean-counter.
+                            Int32 addressTableCreateRowCount = 1;
+
                             // delete all the existing rows
                             QueryFilter queryFilter = new QueryFilter
                             {
@@ -36,7 +40,7 @@ namespace NextGen911DataLoader.commands
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
-                                    WhereClause = "AddSystem = 'ROCKVILLE'"
+                                    WhereClause = "AddSystem = 'MOAB'"
                                 };
 
                                 // Get a Cursor of SGID features.
@@ -108,98 +112,114 @@ namespace NextGen911DataLoader.commands
 
 
                                             // Derive Place_Type from PtType.
-                                            string placeType = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType")).ToString();
-                                            switch (placeType)
+                                            if (!(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType")) == null))
                                             {
-                                                case "Agricultural":
-                                                    rowBuffer["Place_Type"] = "";
-                                                    break;
-                                                case "BASE ADDRESS":
-                                                    rowBuffer["Place_Type"] = "Government-base";
-                                                    break;
-                                                case "Business":
-                                                    rowBuffer["Place_Type"] = "";
-                                                    break;
-                                                case "Commercial":
-                                                    rowBuffer["Place_Type"] = "";
-                                                    break;
-                                                case "Education":
-                                                    rowBuffer["Place_Type"] = "School";
-                                                    break;
-                                                case "Government":
-                                                    rowBuffer["Place_Type"] = "Government";
-                                                    break;
-                                                case "Industrial":
-                                                    rowBuffer["Place_Type"] = "Industrial";
-                                                    break;
-                                                case "Med":
-                                                    rowBuffer["Place_Type"] = "Hospital";
-                                                    break;
-                                                case "Mixed Use":
-                                                    rowBuffer["Place_Type"] = "";
-                                                    break;
-                                                case "OTH":
-                                                    rowBuffer["Place_Type"] = "Other";
-                                                    break;
-                                                case "Other":
-                                                    rowBuffer["Place_Type"] = "Other";
-                                                    break;
-                                                case "Residential":
-                                                    rowBuffer["Place_Type"] = "Residence";
-                                                    break;
-                                                case "Unknown":
-                                                    rowBuffer["Place_Type"] = "Unknown";
-                                                    break;
-                                                case "Vacant":
-                                                    rowBuffer["Place_Type"] = "";
-                                                    break;
-                                                default:
-                                                    if (placeType != "")
+                                                string placeType = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType")).ToString();
+                                                if (placeType.Trim() != "")
+                                                {
+                                                    switch (placeType)
                                                     {
-                                                        rowBuffer["Place_Type"] = "N/A";
-                                                        // write out an error report as there may be a new domain
+                                                        case "Agricultural":
+                                                            rowBuffer["Place_Type"] = "";
+                                                            break;
+                                                        case "BASE ADDRESS":
+                                                            rowBuffer["Place_Type"] = "Government-base";
+                                                            break;
+                                                        case "Business":
+                                                            rowBuffer["Place_Type"] = "";
+                                                            break;
+                                                        case "Commercial":
+                                                            rowBuffer["Place_Type"] = "";
+                                                            break;
+                                                        case "Education":
+                                                            rowBuffer["Place_Type"] = "School";
+                                                            break;
+                                                        case "Government":
+                                                            rowBuffer["Place_Type"] = "Government";
+                                                            break;
+                                                        case "Industrial":
+                                                            rowBuffer["Place_Type"] = "Industrial";
+                                                            break;
+                                                        case "Med":
+                                                            rowBuffer["Place_Type"] = "Hospital";
+                                                            break;
+                                                        case "Mixed Use":
+                                                            rowBuffer["Place_Type"] = "";
+                                                            break;
+                                                        case "OTH":
+                                                            rowBuffer["Place_Type"] = "Other";
+                                                            break;
+                                                        case "Other":
+                                                            rowBuffer["Place_Type"] = "Other";
+                                                            break;
+                                                        case "Residential":
+                                                            rowBuffer["Place_Type"] = "Residence";
+                                                            break;
+                                                        case "Unknown":
+                                                            rowBuffer["Place_Type"] = "Unknown";
+                                                            break;
+                                                        case "Vacant":
+                                                            rowBuffer["Place_Type"] = "";
+                                                            break;
+                                                        default:
+                                                            if (placeType != "")
+                                                            {
+                                                                rowBuffer["Place_Type"] = "N/A";
+                                                                // write out an error report as there may be a new domain
+                                                                streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "SGID Domain for PtType is not recognized. Possibly new?");
+                     
+                                                            }
+                                                            break;
                                                     }
-                                                    break;
+                                                }
                                             }
 
+
                                             // Derive Placement from PtLocation.
-                                            string pntLocation = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation")).ToString();
-                                            switch (pntLocation)
+                                            if (!(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation")) == null))
                                             {
-                                                case "Centroid":
-                                                    rowBuffer["Placement"] = "";
-                                                    break;
-                                                case "Driveway Entrance":
-                                                    rowBuffer["Placement"] = "Property Access";
-                                                    break;
-                                                case "Geocoded":
-                                                    rowBuffer["Placement"] = "Geocoding";
-                                                    break;
-                                                case "Other":
-                                                    rowBuffer["Place_Type"] = "";
-                                                    break;
-                                                case "Parcel Centroid":
-                                                    rowBuffer["Placement"] = "Parcel";
-                                                    break;
-                                                case "Primary Structure Entrance":
-                                                    rowBuffer["Placement"] = "Structure";
-                                                    break;
-                                                case "Residential":
-                                                    rowBuffer["Placement"] = "Site";
-                                                    break;
-                                                case "Rooftop":
-                                                    rowBuffer["Placement"] = "";
-                                                    break;
-                                                case "Unknown":
-                                                    rowBuffer["Placement"] = "Unknown";
-                                                    break;
-                                                default:
-                                                    if (pntLocation != "")
+                                                string pntLocation = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation")).ToString();
+                                                if (pntLocation.Trim() != "")
+                                                {
+                                                    switch (pntLocation)
                                                     {
-                                                        rowBuffer["Placement"] = "N/A";
-                                                        // write out an error report as there may be a new domain
+                                                        case "Centroid":
+                                                            rowBuffer["Placement"] = "";
+                                                            break;
+                                                        case "Driveway Entrance":
+                                                            rowBuffer["Placement"] = "Property Access";
+                                                            break;
+                                                        case "Geocoded":
+                                                            rowBuffer["Placement"] = "Geocoding";
+                                                            break;
+                                                        case "Other":
+                                                            rowBuffer["Place_Type"] = "";
+                                                            break;
+                                                        case "Parcel Centroid":
+                                                            rowBuffer["Placement"] = "Parcel";
+                                                            break;
+                                                        case "Primary Structure Entrance":
+                                                            rowBuffer["Placement"] = "Structure";
+                                                            break;
+                                                        case "Residential":
+                                                            rowBuffer["Placement"] = "Site";
+                                                            break;
+                                                        case "Rooftop":
+                                                            rowBuffer["Placement"] = "";
+                                                            break;
+                                                        case "Unknown":
+                                                            rowBuffer["Placement"] = "Unknown";
+                                                            break;
+                                                        default:
+                                                            if (pntLocation != "")
+                                                            {
+                                                                rowBuffer["Placement"] = "N/A";
+                                                                // write out an error report as there may be a new domain
+                                                                streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "SGID Domain for PtLocation is not recognized. Possibly new?");
+                                                            }
+                                                            break;
                                                     }
-                                                    break;
+                                                }
                                             }
 
 
@@ -266,6 +286,8 @@ namespace NextGen911DataLoader.commands
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911AddrPnts.CreateRow(rowBuffer))
                                             {
+                                                Console.WriteLine("AddrPnt" + addressTableCreateRowCount);
+                                                addressTableCreateRowCount = addressTableCreateRowCount + 1;
                                             }
                                         }
                                     }
@@ -278,6 +300,9 @@ namespace NextGen911DataLoader.commands
             catch (Exception ex)
             {
                 Console.WriteLine("There was an error with LoadAddressPnts method." +
+                ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
+
+                streamWriter.WriteLine("There was an error with LoadAddressPnts method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }

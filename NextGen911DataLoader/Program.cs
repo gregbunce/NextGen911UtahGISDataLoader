@@ -31,8 +31,8 @@ namespace NextGen911DataLoader
             string path = @"C:\temp\NextGen911DataLoaderLog" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + ".txt";
             FileStream fileStream = new FileStream(path, FileMode.Create);
             StreamWriter streamWriter = new StreamWriter(fileStream);
-            streamWriter.WriteLine("Started at: " + DateTime.Now.ToString("yyyy-MM-dd-HH-mm"));
-            streamWriter.WriteLine("Feature Classes that were ETL'd:");
+            string startTime = ("Started at: " + DateTime.Now.ToString());
+            streamWriter.WriteLine("List of Feature Classes that were ETL'd:");
 
             // Check what layers the user wants to etl.
             foreach (string s in args)
@@ -42,19 +42,19 @@ namespace NextGen911DataLoader
                 switch (s.ToUpper()) // make the argument upper to allow the user to use any casing.
                 {
                     case "ROADS":
-                        streamWriter.WriteLine(s);
+                        streamWriter.WriteLine(" *" + s);
                         eltRoads = true;
                         break;
                     case "ADDRESSPOINTS":
-                        streamWriter.WriteLine(s);
+                        streamWriter.WriteLine(" *" + s);
                         etlAddresspoints = true;
                         break;
                     case "PSAPS":
-                        streamWriter.WriteLine(s);
+                        streamWriter.WriteLine(" *" + s);
                         etlPsaps = true;
                         break;
                     case "MUNI":
-                        streamWriter.WriteLine(s);
+                        streamWriter.WriteLine(" *" + s);
                         etlMuni = true;
                         break;
                     default:
@@ -63,10 +63,10 @@ namespace NextGen911DataLoader
             }
 
             // Write out the field headings.
+            streamWriter.WriteLine();
+            streamWriter.WriteLine("ERROR REPORT...");
+            streamWriter.WriteLine("_______________________________________");
             streamWriter.WriteLine("FeatureType" + "," + "SGID_OID" + "," + "NextGen_OID" + "," + "Notes");
-
-
-
 
 
             // Host.Initialize before constructing any objects from ArcGIS.Core
@@ -98,13 +98,13 @@ namespace NextGen911DataLoader
             // ETL Roads Data to NG911
             if (eltRoads)
             {
-                commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath);
+                commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
 
             // ETL address point to NG911
             if (etlAddresspoints)
             {
-                commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath);
+                commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
 
 
@@ -114,13 +114,24 @@ namespace NextGen911DataLoader
             //FeatureClass addressPnts = sgid.OpenDataset<FeatureClass>("SGID10.LOCATION.AddressPoints");
             //FeatureClass muni = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Municipalities");
 
-            // Keep the console window open
+            // Keep the console window open.
             Console.WriteLine("Done!  Press any key to continue...");
             Console.Read();
 
-            //close the stream writer
-            streamWriter.WriteLine("Finshed at: " + DateTime.Now.ToString("yyyy-MM-dd-HH-mm"));
+            // Close the stream writer.
             streamWriter.Close();
+            // Copy all the contents of streamwriter.
+            string oldText = File.ReadAllText(path);
+
+            // Create a new streamwriter, to replace the older one -- this allows me insert lines at the top of the streamwriter, keeping all the log info together.
+            using (var sw = new StreamWriter(path, false))
+            {
+                sw.WriteLine(startTime);
+                sw.WriteLine("Finshed at: " + DateTime.Now.ToString());
+                sw.WriteLine("Location of output NG911 FileGeodatabase: " + args[0]);
+                sw.WriteLine(oldText);
+                sw.Close();
+            }
         }
     }
 }
