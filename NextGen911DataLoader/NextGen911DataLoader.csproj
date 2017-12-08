@@ -51,12 +51,17 @@
   <ItemGroup>
     <Compile Include="commands\AddRowToStreetNameAliasTable.cs" />
     <Compile Include="commands\ConnectToSGID.cs" />
+    <Compile Include="commands\ETL_CodeStub.cs" />
+    <Compile Include="commands\GetCountyNameFromNumber.cs" />
     <Compile Include="commands\GetDomainValue.cs" />
     <Compile Include="commands\GetRightLeftOffsetPointsFromPolyline.cs" />
     <Compile Include="commands\LoadAddressPnts.cs" />
+    <Compile Include="commands\LoadIncMuni.cs" />
     <Compile Include="commands\LoadPsapData.cs" />
     <Compile Include="commands\LoadRoads.cs" />
+    <Compile Include="commands\LoadUnincComm.cs" />
     <Compile Include="commands\PointInPolygonQuery.cs" />
+    <Compile Include="commands\RemoveAlphaCharsFromString.cs" />
     <Compile Include="commands\ReprojectPoint.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

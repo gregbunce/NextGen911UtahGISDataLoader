@@ -18,7 +18,8 @@ namespace NextGen911DataLoader
             bool eltRoads = false;
             bool etlAddresspoints = false;
             bool etlPsaps = false;
-            bool etlMuni = false;
+            bool etlInc = false;
+            bool etlUnInc = false;
 
             // Check that minimum command line args are present.
             if (args.Length < 4)
@@ -53,10 +54,16 @@ namespace NextGen911DataLoader
                         streamWriter.WriteLine(" *" + s);
                         etlPsaps = true;
                         break;
-                    case "MUNI":
+                    case "INC":
                         streamWriter.WriteLine(" *" + s);
-                        etlMuni = true;
+                        etlInc = true;
                         break;
+                    case "UNINC":
+                        streamWriter.WriteLine(" *" + s);
+                        etlUnInc = true;
+                        break;
+
+
                     default:
                         break;
                 }
@@ -105,6 +112,18 @@ namespace NextGen911DataLoader
             if (etlAddresspoints)
             {
                 commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            }
+
+            // ETL incorporated muni to NG911
+            if (etlInc)
+            {
+                commands.LoadIncMuni.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            }
+
+            // ETL Unicorporated Comm to NG911
+            if (etlUnInc)
+            {
+                commands.LoadUnincComm.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
 
 
