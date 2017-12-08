@@ -58,6 +58,7 @@
     <Compile Include="commands\LoadAddressPnts.cs" />
     <Compile Include="commands\LoadCounties.cs" />
     <Compile Include="commands\LoadIncMuni.cs" />
+    <Compile Include="commands\LoadMileMarkerLocations.cs" />
     <Compile Include="commands\LoadPsapData.cs" />
     <Compile Include="commands\LoadRoads.cs" />
     <Compile Include="commands\LoadUnincComm.cs" />

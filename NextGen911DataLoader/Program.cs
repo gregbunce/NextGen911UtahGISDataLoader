@@ -15,12 +15,13 @@ namespace NextGen911DataLoader
 
         static void Main(string[] args)
         {
-            bool eltRoads = false;
+            bool etlRoads = false;
             bool etlAddresspoints = false;
             bool etlPsaps = false;
             bool etlInc = false;
             bool etlUnInc = false;
             bool etlCounties = false;
+            bool etlMileMarkers = false;
 
             // Check that minimum command line args are present.
             if (args.Length < 4)
@@ -45,7 +46,7 @@ namespace NextGen911DataLoader
                 {
                     case "ROADS":
                         streamWriter.WriteLine(" *" + s);
-                        eltRoads = true;
+                        etlRoads = true;
                         break;
                     case "ADDRESSPOINTS":
                         streamWriter.WriteLine(" *" + s);
@@ -67,7 +68,10 @@ namespace NextGen911DataLoader
                         streamWriter.WriteLine(" *" + s);
                         etlCounties = true;
                         break;
-
+                    case "MILEMARKERS":
+                        streamWriter.WriteLine(" *" + s);
+                        etlMileMarkers = true;
+                        break;
                     default:
                         break;
                 }
@@ -107,7 +111,7 @@ namespace NextGen911DataLoader
             }
 
             // ETL Roads Data to NG911
-            if (eltRoads)
+            if (etlRoads)
             {
                 commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
@@ -130,10 +134,18 @@ namespace NextGen911DataLoader
                 commands.LoadUnincComm.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
 
+            // ETL counties to NG911
             if (etlCounties)
             {
                 commands.LoadCounties.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
+
+            // ETL Mile Markers to NG911
+            if (etlMileMarkers)
+            {
+                commands.LoadMileMarkerLocations.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            }
+
 
 
             // Get SGID feature classes //

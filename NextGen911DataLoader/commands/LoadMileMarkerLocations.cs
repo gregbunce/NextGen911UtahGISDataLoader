@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NextGen911DataLoader.commands
 {
-    class LoadCounties
+    class LoadMileMarkerLocations
     {
         public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter)
         {
@@ -21,7 +21,7 @@ namespace NextGen911DataLoader.commands
                     using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                     {
                         // Get access to NG911 feature class
-                        using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("Counties"))
+                        using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("MileMarkerLocation"))
                         {
                             // Create a row count bean-counter.
                             Int32 ng911FeatClassRowCount = 1;
@@ -35,11 +35,11 @@ namespace NextGen911DataLoader.commands
                             ng911_FeatClass.DeleteRows(queryFilter);
 
                             // get SGID Feature Classes.
-                            using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Counties"))
+                            using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.UDOTTenthMileRefPoints"))
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
-                                    //WhereClause = "AddSystem = 'SALT LAKE CITY' and StreetName = 'ELIZABETH'"
+                                    WhereClause = "RT_NAME = '0215'"
                                 };
 
                                 // Get a Cursor of SGID features.
@@ -64,20 +64,23 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
 
                                             // Create attributes for direct transfer fields (via rowBuffer). //
-                                            rowBuffer["Source"] = "AGRC";
+                                            rowBuffer["Source"] = "UDOT";
                                             //rowBuffer["DateUpdate"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UPDATED"));
-                                            rowBuffer["County"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString().ToUpper().Trim() + " COUNTY";
-                                            rowBuffer["State"] = "UT";
-                                            rowBuffer["Country"] = "US";
-                                            rowBuffer["CntyNGUID"] = "CNTY" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
+                                            rowBuffer["MileM_Rte"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("RT_NAME"));
+                                            rowBuffer["MileMValue"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("MP"));
+                                            rowBuffer["MileM_Unit"] = "Miles";
+                                            rowBuffer["MileM_Type"] = "Road";
+                                            rowBuffer["MileM_Ind"] = "P";
+                                            rowBuffer["MileMNGUID"] = "MP" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                             {
-                                                Console.WriteLine("Counties_Ng911RowCount: " + ng911FeatClassRowCount);
-                                                Console.WriteLine("Counties__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
+                                                Console.WriteLine("MileMarker_Ng911RowCount: " + ng911FeatClassRowCount);
+                                                Console.WriteLine("MileMarker10th__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                                 ng911FeatClassRowCount = ng911FeatClassRowCount + 1;
                                             }
+
                                         }
                                     }
                                 }
@@ -88,13 +91,13 @@ namespace NextGen911DataLoader.commands
             }
             catch (Exception ex)
             {
-                Console.WriteLine("There was an error with LoadCounties method. " +
+                Console.WriteLine("There was an error with LoadMileMarkerLocations method. " +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
 
                 streamWriter.WriteLine();
                 streamWriter.WriteLine("ERROR MESSAGE...");
                 streamWriter.WriteLine("_______________________________________");
-                streamWriter.WriteLine("There was an error with LoadCounties method." +
+                streamWriter.WriteLine("There was an error with LoadMileMarkerLocations method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }
