@@ -56,6 +56,7 @@
     <Compile Include="commands\GetDomainValue.cs" />
     <Compile Include="commands\GetRightLeftOffsetPointsFromPolyline.cs" />
     <Compile Include="commands\LoadAddressPnts.cs" />
+    <Compile Include="commands\LoadCounties.cs" />
     <Compile Include="commands\LoadIncMuni.cs" />
     <Compile Include="commands\LoadPsapData.cs" />
     <Compile Include="commands\LoadRoads.cs" />

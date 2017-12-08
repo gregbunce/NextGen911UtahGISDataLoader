@@ -21,7 +21,7 @@ namespace NextGen911DataLoader.commands
                     using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                     {
                         // Get access to NG911 feature class
-                        using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("NG911_FeatureClassName"))
+                        using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("UnincorporatedCommunity"))
                         {
                             // Create a row count bean-counter.
                             Int32 ng911FeatClassRowCount = 1;
@@ -35,7 +35,7 @@ namespace NextGen911DataLoader.commands
                             ng911_FeatClass.DeleteRows(queryFilter);
 
                             // get SGID Feature Classes.
-                            using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10..."), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10..."))
+                            using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.MetroTownships"))
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
@@ -64,17 +64,23 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
 
                                             // Create attributes for direct transfer fields (via rowBuffer). //
-                                            rowBuffer["Source"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddSource"));
+                                            rowBuffer["Source"] = "AGRC";
+                                            rowBuffer["DateUpdate"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UPDATED"));
+                                            rowBuffer["Uninc_Comm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SHORTDESC")).ToString().ToUpper().Trim();
+                                            rowBuffer["State"] = "UT";
+                                            rowBuffer["Country"] = "US";
+                                            rowBuffer["UnincNGUID"] = "UNINC" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
 
-                                            // ADD OTHER FIELDS //
+                                            // Get the county name from the COUNTYNBR field.
+                                            string countyName = GetCountyNameFromNumber.Execute(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString(), streamWriter);
+                                            rowBuffer["County"] = countyName + " COUNTY";
 
 
-
-                                            // create the row, with attributes and geometry via rowBuffer, in the ng911 database
+                                            // create the row, with attributes and geometry via rowBuffer, in the ng911 database.
                                             using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                             {
-                                                Console.WriteLine("AddrPntRowCount: " + ng911FeatClassRowCount);
-                                                Console.WriteLine("AddrPntSgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
+                                                Console.WriteLine("ng911_UnIncRowCount: " + ng911FeatClassRowCount);
+                                                Console.WriteLine("MetroTwnShip_sgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                                 ng911FeatClassRowCount = ng911FeatClassRowCount + 1;
                                             }
 

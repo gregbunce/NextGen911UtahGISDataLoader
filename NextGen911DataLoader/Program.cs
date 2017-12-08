@@ -20,6 +20,7 @@ namespace NextGen911DataLoader
             bool etlPsaps = false;
             bool etlInc = false;
             bool etlUnInc = false;
+            bool etlCounties = false;
 
             // Check that minimum command line args are present.
             if (args.Length < 4)
@@ -62,7 +63,10 @@ namespace NextGen911DataLoader
                         streamWriter.WriteLine(" *" + s);
                         etlUnInc = true;
                         break;
-
+                    case "COUNTIES":
+                        streamWriter.WriteLine(" *" + s);
+                        etlCounties = true;
+                        break;
 
                     default:
                         break;
@@ -71,7 +75,7 @@ namespace NextGen911DataLoader
 
             // Write out the field headings.
             streamWriter.WriteLine();
-            streamWriter.WriteLine("WARNING DATA ADJUSTED REPORT...");
+            streamWriter.WriteLine("ADJUSTED DATA DURING ETL >>> REPORT/WARNING...");
             streamWriter.WriteLine("_______________________________________");
             streamWriter.WriteLine("FeatureType" + "," + "SGID_OID" + "," + "NextGen_OID" + "," + "Notes");
 
@@ -124,6 +128,11 @@ namespace NextGen911DataLoader
             if (etlUnInc)
             {
                 commands.LoadUnincComm.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            }
+
+            if (etlCounties)
+            {
+                commands.LoadCounties.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
 
 
