@@ -63,8 +63,10 @@
     <Compile Include="commands\LoadRoads.cs" />
     <Compile Include="commands\LoadUnincComm.cs" />
     <Compile Include="commands\PointInPolygonQuery.cs" />
+    <Compile Include="commands\PopuateCountyValuesDict.cs" />
     <Compile Include="commands\RemoveAlphaCharsFromString.cs" />
     <Compile Include="commands\ReprojectPoint.cs" />
+    <Compile Include="models\CountyValues.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

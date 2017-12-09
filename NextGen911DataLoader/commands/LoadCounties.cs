@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NextGen911DataLoader.models;
 
 namespace NextGen911DataLoader.commands
 {
@@ -70,7 +71,7 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["State"] = "UT";
                                             rowBuffer["Country"] = "US";
                                             rowBuffer["CntyNGUID"] = "CNTY" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
-
+                                            
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                             {

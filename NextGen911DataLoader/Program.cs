@@ -9,6 +9,7 @@ using System.IO;
 
 namespace NextGen911DataLoader
 {
+
     class Program
     {
         [STAThread]
@@ -24,9 +25,10 @@ namespace NextGen911DataLoader
             bool etlMileMarkers = false;
 
             // Check that minimum command line args are present.
-            if (args.Length < 4)
+            if (!(args.Length > 4))
             {
-                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order): roads, addresspoints, psaps, muni]");
+                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order): roads, addresspoints, psaps, inc, uninc, counties, milemarkers]");
+                Console.Read();
                 return;
             }
 
@@ -104,6 +106,9 @@ namespace NextGen911DataLoader
             // Connect to SDID Database //
             DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute(args[1], args[2], args[3]);
 
+            // Populate the CountyNumber/CountyName Dictionary lookup... for use later thoughout the project.
+            commands.GetCountyNameFromNumber.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+
             // ETL Psap Data to NG911
             if (etlPsaps)
             {
@@ -146,6 +151,17 @@ namespace NextGen911DataLoader
                 commands.LoadMileMarkerLocations.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
 
+            // Test Dictionary for county number lookup.
+            //Dictionary<string, string> myDict = commands.PopuateCountyValuesDict.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            //Console.WriteLine(myDict["03"]);
+            //Console.WriteLine(myDict["25"]);
+
+            //// Populate the CountyNumber/CountyName Dictionary lookup... for use later thoughout the project.
+            //commands.GetCountyNameFromNumber.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            //string coutnyName = commands.GetCountyNameFromNumber.GetCountyName("25");
+            //string coutnyName2 = commands.GetCountyNameFromNumber.GetCountyName("03");
+            //Console.WriteLine(coutnyName);
+            //Console.WriteLine(coutnyName2);
 
 
             // Get SGID feature classes //
@@ -157,7 +173,7 @@ namespace NextGen911DataLoader
             // Keep the console window open.
             Console.WriteLine("Done!  Press any key to continue...");
             Console.Read();
-
+        
             // Close the stream writer.
             streamWriter.Close();
             // Copy all the contents of streamwriter.

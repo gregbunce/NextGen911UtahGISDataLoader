@@ -72,7 +72,9 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["IncM_NGUID"] = "INCM" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
 
                                             // Get the county name from the COUNTYNBR field.
-                                            string countyName = GetCountyNameFromNumber.Execute(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString(), streamWriter);
+                                            //string countyName = GetCountyNameFromNumber.Execute(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString(), streamWriter);
+                                            //rowBuffer["County"] = countyName + " COUNTY";
+                                            string countyName = commands.GetCountyNameFromNumber.GetCountyName(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString());
                                             rowBuffer["County"] = countyName + " COUNTY";
 
 

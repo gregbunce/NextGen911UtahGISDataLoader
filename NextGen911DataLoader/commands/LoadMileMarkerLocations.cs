@@ -80,7 +80,6 @@ namespace NextGen911DataLoader.commands
                                                 Console.WriteLine("MileMarker10th__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                                 ng911FeatClassRowCount = ng911FeatClassRowCount + 1;
                                             }
-
                                         }
                                     }
                                 }
