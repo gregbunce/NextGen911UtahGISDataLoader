@@ -23,6 +23,7 @@ namespace NextGen911DataLoader
             bool etlUnInc = false;
             bool etlCounties = false;
             bool etlMileMarkers = false;
+            bool etlRailRoads = false;
 
             // Check that minimum command line args are present.
             if (!(args.Length > 4))
@@ -73,6 +74,10 @@ namespace NextGen911DataLoader
                     case "MILEMARKERS":
                         streamWriter.WriteLine(" *" + s);
                         etlMileMarkers = true;
+                        break;
+                    case "RAILROADS":
+                        streamWriter.WriteLine(" *" + s);
+                        etlRailRoads = true;
                         break;
                     default:
                         break;
@@ -150,6 +155,14 @@ namespace NextGen911DataLoader
             {
                 commands.LoadMileMarkerLocations.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
+            
+            // ETL Railroads to NG911
+            if (etlRailRoads)
+            {
+                commands.LoadRailroads.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            }
+
+
 
             // Test Dictionary for county number lookup.
             //Dictionary<string, string> myDict = commands.PopuateCountyValuesDict.Execute(sgidConnectionProperties, fgdbPath, streamWriter);

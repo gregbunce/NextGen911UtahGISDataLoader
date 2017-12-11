@@ -19,33 +19,33 @@ namespace NextGen911DataLoader.commands
 
                 // connect to sgid.
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
+
+                // connect to ng911 fgdb.
+                using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
+
+                // get SGID Feature Classes.
+                using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Counties"))
                 {
-                    // connect to ng911 fgdb.
-                    using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
+                    QueryFilter queryFilter1 = new QueryFilter
                     {
-                        // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Counties"))
+                        //WhereClause = "AddSystem = 'SALT LAKE CITY' and StreetName = 'ELIZABETH'"
+                    };
+
+                    // Get a Cursor of SGID features.
+                    using (RowCursor SgidCursor = sgid_FeatClass.Search(queryFilter1, true))
+                    {
+                        // Loop through the sgid features.
+                        while (SgidCursor.MoveNext())
                         {
-                            QueryFilter queryFilter1 = new QueryFilter
-                            {
-                                //WhereClause = "AddSystem = 'SALT LAKE CITY' and StreetName = 'ELIZABETH'"
-                            };
+                            // Values to dictionary.
 
-                            // Get a Cursor of SGID features.
-                            using (RowCursor SgidCursor = sgid_FeatClass.Search(queryFilter1, true))
-                            {
-                                // Loop through the sgid features.
-                                while (SgidCursor.MoveNext())
-                                {
-                                    // Values to dictionary.
+                            dict.Add(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString(), SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString());
 
-                                    dict.Add(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString(), SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString());    
-                                    
-                                }
-                            }
                         }
                     }
+
                 }
+                
                 return dict;
             }
             catch

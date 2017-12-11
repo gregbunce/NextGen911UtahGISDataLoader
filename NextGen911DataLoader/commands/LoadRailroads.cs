@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NextGen911DataLoader.commands
 {
-    class ETL_CodeStub
+    class LoadRailroads
     {
         public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter)
         {
@@ -18,7 +18,7 @@ namespace NextGen911DataLoader.commands
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties), NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                 {
                     // Get access to NG911 feature class
-                    using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("NG911_FeatureClassName"))
+                    using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("RailroadCenterlines"))
                     {
                         // Create a row count bean-counter.
                         Int32 ng911FeatClassRowCount = 1;
@@ -32,7 +32,7 @@ namespace NextGen911DataLoader.commands
                         ng911_FeatClass.DeleteRows(queryFilter);
 
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10..."), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10..."))
+                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Railroads"))
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {
@@ -61,17 +61,28 @@ namespace NextGen911DataLoader.commands
                                         rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
 
                                         // Create attributes for direct transfer fields (via rowBuffer). //
-                                        rowBuffer["NG911FieldName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+                                        rowBuffer["Source"] = "AGRC";
+                                        //rowBuffer["DateUpdate"] = "";
+                                        rowBuffer["RS_NGUID"] = "RAIL" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
+                                        //rowBuffer["RLOWN"] = "";
+                                        rowBuffer["RLOP"] =  SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OPERATOR")).ToString();
+                                        rowBuffer["RLNAME"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("RAILROAD")).ToString();
+                                        //rowBuffer["RMPL"] = "";
+                                        //rowBuffer["RMPH"] = "";
 
-                                        // ADD OTHER FIELDS //
-
+                                        //Rail Segment NENA Globally Unique ID RS_NGUID M T 100
+                                        //Rail Line Owner RLOWN C T 100
+                                        //Rail Line Operator RLOP C T 100
+                                        //Rail Line Name RLNAME O T 100
+                                        //Rail Mile Post Low RMPL O F -
+                                        //Rail Mile Post High RMPH O F -
 
 
                                         // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                         using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                         {
-                                            Console.WriteLine("NGLayerName_Ng911RowCount: " + ng911FeatClassRowCount);
-                                            Console.WriteLine("NGLayerName__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
+                                            Console.WriteLine("RailRoad_Ng911RowCount: " + ng911FeatClassRowCount);
+                                            Console.WriteLine("RailRoad__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                             ng911FeatClassRowCount = ng911FeatClassRowCount + 1;
                                         }
 
@@ -80,20 +91,22 @@ namespace NextGen911DataLoader.commands
                             }
                         }
                     }
-                    
                 }
+                
             }
             catch (Exception ex)
             {
-                Console.WriteLine("There was an error with REPLACE_WITH_CLASS_NAME method. " +
+                Console.WriteLine("There was an error with LoadRailroads method. " +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
 
                 streamWriter.WriteLine();
                 streamWriter.WriteLine("ERROR MESSAGE...");
                 streamWriter.WriteLine("_______________________________________");
-                streamWriter.WriteLine("There was an error with REPLACE_WITH_CLASS_NAME method." +
+                streamWriter.WriteLine("There was an error with LoadRailroads method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }
+
+
     }
 }

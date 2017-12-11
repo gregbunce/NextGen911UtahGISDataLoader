@@ -143,6 +143,7 @@ namespace NextGen911DataLoader.commands
             {
                 //Dictionary<string, string> dict = new models.CountyValues<string>();
                 dict = new Dictionary<string, string>();
+                
 
                 // connect to sgid.
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))

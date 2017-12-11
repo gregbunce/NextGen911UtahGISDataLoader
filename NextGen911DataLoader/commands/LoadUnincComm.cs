@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NextGen911DataLoader.extentions;
 
 namespace NextGen911DataLoader.commands
 {
@@ -74,9 +75,12 @@ namespace NextGen911DataLoader.commands
                                             // Get the county name from the COUNTYNBR field.
                                             //string countyName = GetCountyNameFromNumber.Execute(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString(), streamWriter);
                                             //rowBuffer["County"] = countyName + " COUNTY";
-                                            string countyName = commands.GetCountyNameFromNumber.GetCountyName(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString());
-                                            rowBuffer["County"] = countyName + " COUNTY";
 
+                                            //string countyName = commands.GetCountyNameFromNumber.GetCountyName(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString());
+                                            //rowBuffer["County"] = countyName + " COUNTY";
+
+                                            string countyName = GetCountyNameFromNumber.dict.GetCountyNameExt(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("COUNTYNBR")).ToString());
+                                            rowBuffer["County"] = countyName + " COUNTY";
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database.
                                             using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
@@ -85,7 +89,6 @@ namespace NextGen911DataLoader.commands
                                                 Console.WriteLine("MetroTwnShip_sgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                                 ng911FeatClassRowCount = ng911FeatClassRowCount + 1;
                                             }
-
                                         }
                                     }
                                 }
