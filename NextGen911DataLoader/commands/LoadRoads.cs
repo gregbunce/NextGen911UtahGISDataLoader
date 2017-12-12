@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NextGen911DataLoader.extentions;
 
 namespace NextGen911DataLoader.commands
 {

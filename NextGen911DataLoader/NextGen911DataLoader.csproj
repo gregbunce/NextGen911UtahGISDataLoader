@@ -77,6 +77,7 @@
     <Compile Include="commands\TruncateTable_gp_tool.cs" />
     <Compile Include="commands\ExecuteArcpyScript.cs" />
     <Compile Include="extentions\DictionaryExtension.cs" />
+    <Compile Include="extentions\StringExtension.cs" />
     <Compile Include="models\CountyValues.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
