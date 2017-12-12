@@ -39,6 +39,12 @@
     <Reference Include="ArcGIS.CoreHost">
       <HintPath>..\..\..\..\..\..\..\Program Files\ArcGIS\Pro\bin\ArcGIS.CoreHost.dll</HintPath>
     </Reference>
+    <Reference Include="ArcGIS.Desktop.Core">
+      <HintPath>..\..\..\..\..\..\..\Program Files\ArcGIS\Pro\bin\Extensions\Core\ArcGIS.Desktop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ArcGIS.Desktop.Framework">
+      <HintPath>..\..\..\..\..\..\..\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,6 +64,7 @@
     <Compile Include="commands\LoadAddressPnts.cs" />
     <Compile Include="commands\LoadCounties.cs" />
     <Compile Include="commands\LoadIncMuni.cs" />
+    <Compile Include="commands\LoadLawEnforcement.cs" />
     <Compile Include="commands\LoadMileMarkerLocations.cs" />
     <Compile Include="commands\LoadPsapData.cs" />
     <Compile Include="commands\LoadRailroads.cs" />
@@ -67,6 +74,8 @@
     <Compile Include="commands\PopuateCountyValuesDict.cs" />
     <Compile Include="commands\RemoveAlphaCharsFromString.cs" />
     <Compile Include="commands\ReprojectPoint.cs" />
+    <Compile Include="commands\TruncateTable_gp_tool.cs" />
+    <Compile Include="commands\ExecuteArcpyScript.cs" />
     <Compile Include="extentions\DictionaryExtension.cs" />
     <Compile Include="models\CountyValues.cs" />
     <Compile Include="Program.cs" />
@@ -74,6 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="scripts_arcpy\TrancateTable.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,5 @@
 ﻿using ArcGIS.Core.Data;
+using ArcGIS.Desktop.Core.Geoprocessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NextGen911DataLoader.commands
 {
-    class LoadRailroads
+    class LoadLawEnforcement
     {
         public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter)
         {
@@ -18,7 +19,7 @@ namespace NextGen911DataLoader.commands
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties), NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                 {
                     // Get access to NG911 feature class
-                    using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("RailroadCenterlines"))
+                    using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("LawEnforcement"))
                     {
                         // Create a row count bean-counter.
                         Int32 ng911FeatClassRowCount = 1;
@@ -29,14 +30,19 @@ namespace NextGen911DataLoader.commands
                             WhereClause = "OBJECTID > 0"
                         };
                         // Delete all rows in the AddressPoints feature class.
-                        ng911_FeatClass.DeleteRows(queryFilter);
-                        
+                        //ng911_FeatClass.DeleteRows(queryFilter);
+
+                        string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
+                        string pythonFile = @"C:\temp\Truncate.py";
+                        commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
+
+
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Railroads"))
+                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.LawEnforcementBoundaries"))
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {
-                                WhereClause = "OBJECTID < 100"
+                                //WhereClause = "AddSystem = 'SALT LAKE CITY' and StreetName = 'ELIZABETH'"
                             };
 
                             // Get a Cursor of SGID features.
@@ -62,21 +68,44 @@ namespace NextGen911DataLoader.commands
 
                                         // Create attributes for direct transfer fields (via rowBuffer). //
                                         rowBuffer["Source"] = "AGRC";
-                                        //rowBuffer["DateUpdate"] = "";
-                                        rowBuffer["RS_NGUID"] = "RAIL" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
-                                        //rowBuffer["RLOWN"] = "";
-                                        rowBuffer["RLOP"] =  SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OPERATOR")).ToString();
-                                        rowBuffer["RLNAME"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("RAILROAD")).ToString();
-                                        //rowBuffer["RMPL"] = "";
-                                        //rowBuffer["RMPH"] = "";
+                                        rowBuffer["State"] = "UT";
+                                        rowBuffer["DateUpdate"] = DateTime.Now;
+                                        //rowBuffer["Effective"] = DateTime.Now;
+                                        //rowBuffer["Expire"] = DateTime.Now;
+                                        rowBuffer["ES_NGUID"] = "LAW" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
+                                        rowBuffer["Agency_ID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME"));
+                                        //rowBuffer["ServiceURI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+                                        //rowBuffer["ServiceURN"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+                                        //rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+                                        //rowBuffer["AVcard_URI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+
+                                        // DISPLAY NAME //
+                                        if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString().Contains("PD"))
+                                        {
+                                            string displayName = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString();
+                                            displayName = displayName.Replace("PD", "POLICE DEPARTMENT");
+                                        }
+                                        else if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString().Contains("SO"))
+                                        {
+                                            string displayName = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString();
+                                            displayName = displayName.Replace("SO", "SHERIFF OFFICE");
+                                        }
+                                        else
+                                        {
+                                            rowBuffer["DsplayName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME"));
+                                        }
+
 
                                         // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                         using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                         {
-                                            Console.WriteLine("RailRoad_Ng911RowCount: " + ng911FeatClassRowCount);
-                                            Console.WriteLine("RailRoad__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
+
+                                            //ng911_FeatClass.get.Search()
+                                            Console.WriteLine("LawEnforcement_Ng911RowCount: " + ng911FeatClassRowCount);
+                                            Console.WriteLine("LawEnforcement__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                             ng911FeatClassRowCount = ng911FeatClassRowCount + 1;
                                         }
+
                                     }
                                 }
                             }
@@ -86,15 +115,16 @@ namespace NextGen911DataLoader.commands
             }
             catch (Exception ex)
             {
-                Console.WriteLine("There was an error with LoadRailroads method. " +
+                Console.WriteLine("There was an error with LoadLawEnforcement method. " +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
 
                 streamWriter.WriteLine();
                 streamWriter.WriteLine("ERROR MESSAGE...");
                 streamWriter.WriteLine("_______________________________________");
-                streamWriter.WriteLine("There was an error with LoadRailroads method." +
+                streamWriter.WriteLine("There was an error with LoadLawEnforcement method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }
+
     }
 }

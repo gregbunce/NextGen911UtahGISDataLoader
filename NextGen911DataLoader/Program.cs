@@ -24,11 +24,12 @@ namespace NextGen911DataLoader
             bool etlCounties = false;
             bool etlMileMarkers = false;
             bool etlRailRoads = false;
+            bool etlLawEnforcement = false;
 
             // Check that minimum command line args are present.
             if (!(args.Length > 4))
             {
-                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order): roads, addresspoints, psaps, inc, uninc, counties, milemarkers]");
+                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law]");
                 Console.Read();
                 return;
             }
@@ -78,6 +79,10 @@ namespace NextGen911DataLoader
                     case "RAILROADS":
                         streamWriter.WriteLine(" *" + s);
                         etlRailRoads = true;
+                        break;
+                    case "LAW":
+                        streamWriter.WriteLine(" *" + s);
+                        etlLawEnforcement = true;
                         break;
                     default:
                         break;
@@ -160,6 +165,12 @@ namespace NextGen911DataLoader
             if (etlRailRoads)
             {
                 commands.LoadRailroads.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+            }
+
+            // ETL law enforcement to NG911
+            if (etlLawEnforcement)
+            {
+                commands.LoadLawEnforcement.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
             }
 
 
