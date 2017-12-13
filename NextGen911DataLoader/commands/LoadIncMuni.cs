@@ -10,7 +10,7 @@ namespace NextGen911DataLoader.commands
 {
     class LoadIncMuni
     {
-        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter)
+        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter, bool truncate)
         {
             try
             {
@@ -26,13 +26,13 @@ namespace NextGen911DataLoader.commands
                             // Create a row count bean-counter.
                             Int32 ng911FeatClassRowCount = 1;
 
-                            // delete all the existing rows
-                            QueryFilter queryFilter = new QueryFilter
+                            // Check if the user wants to truncate the layer first
+                            if (truncate)
                             {
-                                WhereClause = "OBJECTID > 0"
-                            };
-                            // Delete all rows in the AddressPoints feature class.
-                            ng911_FeatClass.DeleteRows(queryFilter);
+                                string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
+                                string pythonFile = "../../scripts_arcpy/TrancateTable.py";
+                                commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
+                            }
 
                             // get SGID Feature Classes.
                             using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Municipalities"))

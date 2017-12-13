@@ -17,13 +17,21 @@ namespace NextGen911DataLoader
         static void Main(string[] args)
         {
             bool etlRoads = false;
+            bool truncateRoads = false;
             bool etlAddresspoints = false;
+            bool truncateAddressPoints = false;
             bool etlPsaps = false;
+            bool truncatePsaps = false;
             bool etlInc = false;
+            bool truncateInc = false;
             bool etlUnInc = false;
+            bool truncateUnInc = false;
             bool etlCounties = false;
+            bool truncateCounties = false;
             bool etlMileMarkers = false;
+            bool truncateMileMarkers = false;
             bool etlRailRoads = false;
+            bool truncateRailRoads = false;
             bool etlLawEnforcement = false;
             bool truncateLawEnforcement = false;
 
@@ -42,7 +50,7 @@ namespace NextGen911DataLoader
             string startTime = ("Started at: " + DateTime.Now.ToString());
             streamWriter.WriteLine("List of Feature Classes that were ETL'd:");
 
-            // Check what layers the user wants to etl.
+            // Check what layers the user wants to etl and if they want to truncate the existing data.
             foreach (string s in args)
             {
                 System.Console.WriteLine(s);
@@ -51,36 +59,123 @@ namespace NextGen911DataLoader
                 {
                     case "ROADS":
                     case "ROADS-T":
-                        streamWriter.WriteLine(" *" + s);
-                        etlRoads = true;
+                        if (s.ToUpper() == "ROADS-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlRoads = true;
+                            truncateRoads = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlRoads = true;
+                            truncateRoads = false;
+                        }
                         break;
                     case "ADDRESSPOINTS":
-                        streamWriter.WriteLine(" *" + s);
-                        etlAddresspoints = true;
+                    case "ADDRESSPOINTS-T":
+                        if (s.ToUpper() == "ADDRESSPOINTS-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlAddresspoints = true;
+                            truncateAddressPoints = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlAddresspoints = true;
+                            truncateAddressPoints = false;
+                        }
                         break;
                     case "PSAPS":
-                        streamWriter.WriteLine(" *" + s);
-                        etlPsaps = true;
+                    case "PSAPS-T":
+                        if (s.ToUpper() == "PSAPS-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlPsaps = true;
+                            truncatePsaps = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlPsaps = true;
+                            truncatePsaps = false;
+                        }
                         break;
                     case "INC":
-                        streamWriter.WriteLine(" *" + s);
-                        etlInc = true;
+                    case "INC-T":
+                        if (s.ToUpper() == s.ToUpper() + "INC-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlInc = true;
+                            truncateInc = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlInc = true;
+                            truncateInc = false;
+                        }
                         break;
                     case "UNINC":
-                        streamWriter.WriteLine(" *" + s);
-                        etlUnInc = true;
+                    case "UNINC-T":
+                        if (s.ToUpper() == "UNINC-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlUnInc = true;
+                            truncateUnInc = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlUnInc = true;
+                            truncateUnInc = false;
+                        }
                         break;
                     case "COUNTIES":
-                        streamWriter.WriteLine(" *" + s);
-                        etlCounties = true;
+                    case "COUNTIES-T":
+                        if (s.ToUpper() == "COUNTIES-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlCounties = true;
+                            truncateCounties = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlCounties = true;
+                            truncateCounties = false;
+                        }
                         break;
                     case "MILEMARKERS":
-                        streamWriter.WriteLine(" *" + s);
-                        etlMileMarkers = true;
+                    case "MILEMARKERS-T":
+                        if (s.ToUpper() == "MILEMARKERS-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlMileMarkers = true;
+                            truncateMileMarkers = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlMileMarkers = true;
+                            truncateMileMarkers = false;
+                        }
                         break;
                     case "RAILROADS":
-                        streamWriter.WriteLine(" *" + s);
-                        etlRailRoads = true;
+                    case "RAILROADS-T":
+                        if (s.ToUpper() == "RAILROADS-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlRailRoads = true;
+                            truncateRailRoads = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlRailRoads = true;
+                            truncateRailRoads = false;
+                        }
                         break;
                     case "LAW":
                     case "LAW-T":
@@ -96,7 +191,6 @@ namespace NextGen911DataLoader
                             etlLawEnforcement = true;
                             truncateLawEnforcement = false;
                         }
-
                         break;
                     default:
                         break;
@@ -136,49 +230,49 @@ namespace NextGen911DataLoader
             // ETL Psap Data to NG911
             if (etlPsaps)
             {
-                commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath);
+                commands.LoadPsapData.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncatePsaps);
             }
 
             // ETL Roads Data to NG911
             if (etlRoads)
             {
-                commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateRoads);
             }
 
             // ETL address point to NG911
             if (etlAddresspoints)
             {
-                commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateAddressPoints);
             }
 
             // ETL incorporated muni to NG911
             if (etlInc)
             {
-                commands.LoadIncMuni.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadIncMuni.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateInc);
             }
 
             // ETL Unicorporated Comm to NG911
             if (etlUnInc)
             {
-                commands.LoadUnincComm.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadUnincComm.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateUnInc);
             }
 
             // ETL counties to NG911
             if (etlCounties)
             {
-                commands.LoadCounties.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadCounties.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateCounties);
             }
 
             // ETL Mile Markers to NG911
             if (etlMileMarkers)
             {
-                commands.LoadMileMarkerLocations.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadMileMarkerLocations.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateMileMarkers);
             }
             
             // ETL Railroads to NG911
             if (etlRailRoads)
             {
-                commands.LoadRailroads.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadRailroads.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateRailRoads);
             }
 
             // ETL law enforcement to NG911

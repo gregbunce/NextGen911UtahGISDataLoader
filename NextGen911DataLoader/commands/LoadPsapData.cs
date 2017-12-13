@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using ArcGIS.Core;
 using ArcGIS.Core.Data;
+using System.IO;
 
 namespace NextGen911DataLoader.commands
 {
     class LoadPsapData
     {
-        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath)
+        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter, bool truncate)
         {
             try
             {
@@ -21,14 +22,15 @@ namespace NextGen911DataLoader.commands
                     using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                     {
                         // Get access to NG911 PSAP
-                        using (FeatureClass ng911Psap = NG911Utah.OpenDataset<FeatureClass>("PSAP_Boundaries"))
+                        using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("PSAP_Boundaries"))
                         {
-                            // delete all the existing rows
-                            QueryFilter queryFilter = new QueryFilter
+                            // Check if the user wants to truncate the layer first
+                            if (truncate)
                             {
-                                WhereClause = "OBJECTID > 0"
-                            };
-                            ng911Psap.DeleteRows(queryFilter);
+                                string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
+                                string pythonFile = "../../scripts_arcpy/TrancateTable.py";
+                                commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
+                            }
 
                             // get SGID Psap Feature Class.
                             using (FeatureClass sgidPsap = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.PSAPBoundaries"))
@@ -45,13 +47,13 @@ namespace NextGen911DataLoader.commands
                                     while (SgidPsapCursor.MoveNext())
                                     {
                                         // Get a feature class definition for the NG911 feature class.
-                                        FeatureClassDefinition featureClassDefinition = ng911Psap.GetDefinition();
+                                        FeatureClassDefinition featureClassDefinition = ng911_FeatClass.GetDefinition();
 
                                         //Row SgidRow = SgidPsapCursor.Current;
                                         Feature sgidFeature = (Feature)SgidPsapCursor.Current;
                                         
                                         // Create row buffer.
-                                        using (RowBuffer rowBuffer = ng911Psap.CreateRowBuffer())
+                                        using (RowBuffer rowBuffer = ng911_FeatClass.CreateRowBuffer())
                                         {
                                             // Create geometry (via rowBuffer).
                                             rowBuffer[featureClassDefinition.GetShapeField()] = sgidFeature.GetShape();
@@ -89,7 +91,7 @@ namespace NextGen911DataLoader.commands
 
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
-                                            using (Row row = ng911Psap.CreateRow(rowBuffer)) 
+                                            using (Row row = ng911_FeatClass.CreateRow(rowBuffer)) 
                                             {
                                             }
                                         }
@@ -104,6 +106,12 @@ namespace NextGen911DataLoader.commands
             catch (Exception ex)
             {
                 Console.WriteLine("There was an error with LoadPsapData method." +
+                ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
+
+                streamWriter.WriteLine();
+                streamWriter.WriteLine("ERROR MESSAGE...");
+                streamWriter.WriteLine("_______________________________________");
+                streamWriter.WriteLine("There was an error with LoadPsapData method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }

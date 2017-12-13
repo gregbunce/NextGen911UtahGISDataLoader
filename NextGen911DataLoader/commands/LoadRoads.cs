@@ -13,7 +13,7 @@ namespace NextGen911DataLoader.commands
 {
     class LoadRoads
     {
-        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter)
+        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter, bool truncate)
         {
             try
             {
@@ -24,22 +24,24 @@ namespace NextGen911DataLoader.commands
                     using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                     {
                         // Get access to NG911 feature class
-                        using (FeatureClass ng911Roads = NG911Utah.OpenDataset<FeatureClass>("RoadCenterlines"))
+                        using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("RoadCenterlines"))
                         {
                             // Create a row count bean-counter.
                             Int32 RoadCenterlineCreateRowCount = 1;
 
                             using (Table ng911StreetNameAliasTable = NG911Utah.OpenDataset<Table>("StreetNameAliasTable"))
                             {
-                                // delete all the existing rows
-                                QueryFilter queryFilter = new QueryFilter
+
+                                // Check if the user wants to truncate the layer and table first.
+                                if (truncate)
                                 {
-                                    WhereClause = "OBJECTID > 0"
-                                };
-                                // Delete all rows in the RoadsCenterline feature class.
-                                ng911Roads.DeleteRows(queryFilter);
-                                // Delete all rows in the Street Name Alternate Names table. 
-                                ng911StreetNameAliasTable.DeleteRows(queryFilter);
+                                    Console.WriteLine("Truncate Roads and Roads Alias tables");
+                                    string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
+                                    string tableLocation = fgdbPath + "\\" + ng911StreetNameAliasTable.GetName().ToString();
+                                    string pythonFile = "../../scripts_arcpy/TrancateTable.py";
+                                    commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
+                                    commands.ExecuteArcpyScript.run_arcpy(pythonFile, tableLocation);
+                                }
 
                                 // get SGID Feature Classes.
                                 using (FeatureClass sgidRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
@@ -47,7 +49,7 @@ namespace NextGen911DataLoader.commands
                                     QueryFilter queryFilter1 = new QueryFilter
                                     {
                                         // CARTOCODE 15 is proposed roads
-                                        WhereClause = "ADDRSYS_L = 'SALT LAKE CITY' and CARTOCODE <> '15'"
+                                        WhereClause = "ADDRSYS_L = 'ROCKVILLE' and CARTOCODE <> '15'"
                                     };
 
                                     // Get a Cursor of SGID features.
@@ -57,7 +59,7 @@ namespace NextGen911DataLoader.commands
                                         while (SgidCursor.MoveNext())
                                         {
                                             // Get a feature class definition for the NG911 feature class.
-                                            FeatureClassDefinition featureClassDefinitionNG911 = ng911Roads.GetDefinition();
+                                            FeatureClassDefinition featureClassDefinitionNG911 = ng911_FeatClass.GetDefinition();
 
                                             // Get a feature class definition for the SGID feature class
                                             FeatureClassDefinition featureClassDefinitionSGID = sgidRoads.GetDefinition();
@@ -66,7 +68,7 @@ namespace NextGen911DataLoader.commands
                                             Feature sgidFeature = (Feature)SgidCursor.Current;
 
                                             // Create row buffer.
-                                            using (RowBuffer rowBuffer = ng911Roads.CreateRowBuffer())
+                                            using (RowBuffer rowBuffer = ng911_FeatClass.CreateRowBuffer())
                                             {
                                                 // Create geometry (via rowBuffer).
                                                 rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
@@ -276,9 +278,9 @@ namespace NextGen911DataLoader.commands
 
 
                                                 // create the row, with attributes and geometry via rowBuffer, in the ng911 database
-                                                using (Row row = ng911Roads.CreateRow(rowBuffer))
+                                                using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                                 {
-                                                    Console.WriteLine("RoadCenterline" + RoadCenterlineCreateRowCount);
+                                                    Console.WriteLine("NG_RoadCenterline" + RoadCenterlineCreateRowCount);
                                                     RoadCenterlineCreateRowCount = RoadCenterlineCreateRowCount + 1;
                                                 }
                                             }

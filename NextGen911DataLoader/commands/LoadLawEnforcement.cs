@@ -11,7 +11,7 @@ namespace NextGen911DataLoader.commands
 {
     class LoadLawEnforcement
     {
-        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter, bool truncateLawEnforcement)
+        public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter, bool truncate)
         {
             try
             {
@@ -24,19 +24,10 @@ namespace NextGen911DataLoader.commands
                         // Create a row count bean-counter.
                         Int32 ng911FeatClassRowCount = 1;
 
-                        // delete all the existing rows
-                        QueryFilter queryFilter = new QueryFilter
-                        {
-                            WhereClause = "OBJECTID > 0"
-                        };
-                        // Delete all rows in the AddressPoints feature class.
-                        //ng911_FeatClass.DeleteRows(queryFilter);
-
                         // Check if the user wants to truncate the layer first
-                        if (truncateLawEnforcement)
+                        if (truncate)
                         {
                             string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
-                            //string pythonFile = @"C:\temp\Truncate.py";
                             string pythonFile = "../../scripts_arcpy/TrancateTable.py";
                             commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
                         }
