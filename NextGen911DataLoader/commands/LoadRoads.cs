@@ -29,6 +29,9 @@ namespace NextGen911DataLoader.commands
                             // Create a row count bean-counter.
                             Int32 RoadCenterlineCreateRowCount = 1;
 
+                            // Create a row count for how many records are being added to the alias names table -- for use in the ASt_NGUID field.
+                            Int32 aliasNameRowCount = 0;
+
                             using (Table ng911StreetNameAliasTable = NG911Utah.OpenDataset<Table>("StreetNameAliasTable"))
                             {
 
@@ -83,7 +86,8 @@ namespace NextGen911DataLoader.commands
                                                 rowBuffer["ToAddr_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("TOADDR_R"));
                                                 rowBuffer["Effective"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EFFECTIVE"));
                                                 rowBuffer["Expire"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EXPIRE"));
-                                                rowBuffer["RCL_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID"));
+                                                //rowBuffer["RCL_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID"));
+                                                rowBuffer["RCL_NGUID"] = "RCL" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
                                                 rowBuffer["Parity_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PARITY_L"));
                                                 rowBuffer["Parity_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PARITY_R"));
                                                 rowBuffer["ESN_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ESN_L"));
@@ -289,20 +293,23 @@ namespace NextGen911DataLoader.commands
                                             // Check if the sgid road segment contains alias names in the AN_NAME.
                                             if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AN_NAME")).ToString() != "")
                                             {
+                                                aliasNameRowCount = aliasNameRowCount + 1;
                                                 // Add alias street name to StreetNameAliasTable.
-                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "AN", streamWriter);
+                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "AN", streamWriter, aliasNameRowCount);
                                             }
                                             // Check if the sgid road segment contains alias names in the A1_NAME.
                                             if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("A1_NAME")).ToString() != "")
                                             {
+                                                aliasNameRowCount = aliasNameRowCount + 1;
                                                 // Add alias street name to StreetNameAliasTable.
-                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A1", streamWriter);
+                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A1", streamWriter, aliasNameRowCount);
                                             }
                                             // Check if the sgid road segment contains alias names in the A2_NAME.
                                             if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("A2_NAME")).ToString() != "")
                                             {
+                                                aliasNameRowCount = aliasNameRowCount + 1;
                                                 // Add alias street name to StreetNameAliasTable.
-                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A2", streamWriter);
+                                                AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A2", streamWriter, aliasNameRowCount);
                                             }
                                             // ALIAS STREET NAME TABLE <<<
 

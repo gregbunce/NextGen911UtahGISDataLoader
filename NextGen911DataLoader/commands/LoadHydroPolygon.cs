@@ -1,5 +1,4 @@
 ﻿using ArcGIS.Core.Data;
-using ArcGIS.Desktop.Core.Geoprocessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NextGen911DataLoader.commands
 {
-    class LoadLawEnforcement
+    class LoadHydroPolygon
     {
         public static void Execute(DatabaseConnectionProperties sgidConnectionProperties, string fgdbPath, StreamWriter streamWriter, bool truncate)
         {
@@ -19,7 +18,7 @@ namespace NextGen911DataLoader.commands
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties), NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                 {
                     // Get access to NG911 feature class
-                    using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("LawEnforcement"))
+                    using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("HydrologyPolygon"))
                     {
                         // Create a row count bean-counter.
                         Int32 ng911FeatClassRowCount = 1;
@@ -32,13 +31,12 @@ namespace NextGen911DataLoader.commands
                             commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
                         }
 
-
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.LawEnforcementBoundaries"))
+                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.WATER.LakesNHDHighRes"))
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {
-                                //WhereClause = "AddSystem = 'SALT LAKE CITY' and StreetName = 'ELIZABETH'"
+                                WhereClause = "OBJECTID < 100"
                             };
 
                             // Get a Cursor of SGID features.
@@ -63,44 +61,17 @@ namespace NextGen911DataLoader.commands
                                         rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
 
                                         // Create attributes for direct transfer fields (via rowBuffer). //
-                                        rowBuffer["Source"] = "AGRC";
-                                        rowBuffer["State"] = "UT";
-                                        rowBuffer["DateUpdate"] = DateTime.Now;
-                                        //rowBuffer["Effective"] = DateTime.Now;
-                                        //rowBuffer["Expire"] = DateTime.Now;
-                                        rowBuffer["ES_NGUID"] = "LAW" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
-                                        rowBuffer["Agency_ID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME"));
-                                        //rowBuffer["ServiceURI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
-                                        //rowBuffer["ServiceURN"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
-                                        //rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
-                                        //rowBuffer["AVcard_URI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
-
-                                        // DISPLAY NAME //
-                                        if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString().Contains("PD"))
-                                        {
-                                            string displayName = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString();
-                                            displayName = displayName.Replace("PD", "POLICE DEPARTMENT");
-                                            rowBuffer["DsplayName"] = displayName;
-                                        }
-                                        else if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString().Contains("SO"))
-                                        {
-                                            string displayName = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString();
-                                            displayName = displayName.Replace("SO", "SHERIFF OFFICE");
-                                            rowBuffer["DsplayName"] = displayName;
-                                        }
-                                        else
-                                        {
-                                            rowBuffer["DsplayName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME"));
-                                        }
-
+                                        rowBuffer["Source"] = "USGS";
+                                        rowBuffer["DateUpdate"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("FDate"));
+                                        rowBuffer["HP_NGUID"] = "HYDP" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
+                                        rowBuffer["HP_Type"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("FType_Text"));
+                                        rowBuffer["HP_Name"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("GNIS_Name"));
 
                                         // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                         using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                         {
-
-                                            //ng911_FeatClass.get.Search()
-                                            Console.WriteLine("LawEnforcement_Ng911RowCount: " + ng911FeatClassRowCount);
-                                            Console.WriteLine("LawEnforcement__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
+                                            Console.WriteLine("HydroPolygon_Ng911RowCount: " + ng911FeatClassRowCount);
+                                            Console.WriteLine("LakesNHDHighRes__SgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
                                             ng911FeatClassRowCount = ng911FeatClassRowCount + 1;
                                         }
 
@@ -109,20 +80,22 @@ namespace NextGen911DataLoader.commands
                             }
                         }
                     }
+
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("There was an error with LoadLawEnforcement method. " +
+                Console.WriteLine("There was an error with LoadHydroPolygon method. " +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
 
                 streamWriter.WriteLine();
                 streamWriter.WriteLine("ERROR MESSAGE...");
                 streamWriter.WriteLine("_______________________________________");
-                streamWriter.WriteLine("There was an error with LoadLawEnforcement method." +
+                streamWriter.WriteLine("There was an error with LoadHydroPolygon method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }
+
 
     }
 }

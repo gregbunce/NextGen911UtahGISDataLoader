@@ -34,11 +34,15 @@ namespace NextGen911DataLoader
             bool truncateRailRoads = false;
             bool etlLawEnforcement = false;
             bool truncateLawEnforcement = false;
+            bool etlEMS = false;
+            bool truncateEMS = false;
+            bool etlFire = false;
+            bool truncateFire = false;
 
             // Check that minimum command line args are present.
             if (!(args.Length > 4))
             {
-                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order)(append -t to layer name if you want to truncate the layer before the load. ex: law-t): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law]");
+                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order)(append -t to layer name if you want to truncate the layer before the load. ex: law-t): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law, ems, fire]");
                 Console.Read();
                 return;
             }
@@ -192,6 +196,36 @@ namespace NextGen911DataLoader
                             truncateLawEnforcement = false;
                         }
                         break;
+                    case "EMS":
+                    case "EMS-T":
+                        if (s.ToUpper() == "EMS-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlEMS = true;
+                            truncateEMS = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlEMS = true;
+                            truncateEMS = false;
+                        }
+                        break;
+                    case "FIRE":
+                    case "FIRE-T":
+                        if (s.ToUpper() == "FIRE-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlFire = true;
+                            truncateFire = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlFire = true;
+                            truncateFire = false;
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -281,6 +315,17 @@ namespace NextGen911DataLoader
                 commands.LoadLawEnforcement.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateLawEnforcement);
             }
 
+            // ETL emergency medical services to NG911
+            if (etlEMS)
+            {
+                commands.LoadEmergencyMedicalServices.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateEMS);
+            }
+
+            // ETL fire to NG911
+            if (etlFire)
+            {
+                commands.LoadFire.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateFire);
+            }
 
 
             // Test Dictionary for county number lookup.

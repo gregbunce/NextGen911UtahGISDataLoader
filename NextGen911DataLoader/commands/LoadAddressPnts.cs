@@ -71,7 +71,7 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["DateUpdate"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("LoadDate"));
                                             //rowBuffer["Effective"] = "";
                                             //rowBuffer["Expire"] = "";
-                                            rowBuffer["Site_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UTAddPtID"));
+                                            rowBuffer["Site_NGUID"] = "SITE" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
                                             rowBuffer["Country"] = "US";
                                             rowBuffer["State"] = "UT";
                                             //rowBuffer["AddCode"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));

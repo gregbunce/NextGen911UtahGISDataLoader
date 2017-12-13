@@ -41,16 +41,16 @@ namespace NextGen911DataLoader.commands
                                 };
 
                                 // Get a Cursor of all sgidPsap features.
-                                using (RowCursor SgidPsapCursor = sgidPsap.Search(null, true))
+                                using (RowCursor SgidCursor = sgidPsap.Search(null, true))
                                 {
                                     // Loop through the sgidPsap features.
-                                    while (SgidPsapCursor.MoveNext())
+                                    while (SgidCursor.MoveNext())
                                     {
                                         // Get a feature class definition for the NG911 feature class.
                                         FeatureClassDefinition featureClassDefinition = ng911_FeatClass.GetDefinition();
 
                                         //Row SgidRow = SgidPsapCursor.Current;
-                                        Feature sgidFeature = (Feature)SgidPsapCursor.Current;
+                                        Feature sgidFeature = (Feature)SgidCursor.Current;
                                         
                                         // Create row buffer.
                                         using (RowBuffer rowBuffer = ng911_FeatClass.CreateRowBuffer())
@@ -64,14 +64,14 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["DateUpdate"] = DateTime.Now; // this needs to be the updated date in the sgid database, but we don't have one yet. 
                                             //rowBuffer["Effective"] = "";
                                             //rowBuffer["Expire"] = "";
-                                            rowBuffer["ES_NGUID"] = "";
+                                            rowBuffer["ES_NGUID"] = "PSAP" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov"; ;
                                             rowBuffer["State"] = "UT";
                                             rowBuffer["Agency_ID"] = "";
                                             rowBuffer["ServiceURI"] = "";
                                             rowBuffer["ServiceURN"] = "";
                                             //rowBuffer["ServiceNum"] = "";
                                             rowBuffer["AVcard_URI"] = "";
-                                            rowBuffer["DsplayName"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("PSAP_NAME"));
+                                            rowBuffer["DsplayName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PSAP_NAME"));
 
 
                                             //// DOMAIN VALUES >>>

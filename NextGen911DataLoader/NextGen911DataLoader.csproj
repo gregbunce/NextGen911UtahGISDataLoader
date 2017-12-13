@@ -63,6 +63,10 @@
     <Compile Include="commands\GetRightLeftOffsetPointsFromPolyline.cs" />
     <Compile Include="commands\LoadAddressPnts.cs" />
     <Compile Include="commands\LoadCounties.cs" />
+    <Compile Include="commands\LoadEmergencyMedicalServices.cs" />
+    <Compile Include="commands\LoadFire.cs" />
+    <Compile Include="commands\LoadHydroPolygon.cs" />
+    <Compile Include="commands\LoadHydroPolyline.cs" />
     <Compile Include="commands\LoadIncMuni.cs" />
     <Compile Include="commands\LoadLawEnforcement.cs" />
     <Compile Include="commands\LoadMileMarkerLocations.cs" />

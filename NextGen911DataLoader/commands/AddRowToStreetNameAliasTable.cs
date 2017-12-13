@@ -10,7 +10,7 @@ namespace NextGen911DataLoader.commands
 {
     class AddRowToStreetNameAliasTable
     {
-        public static void Execute(FeatureClassDefinition featureClassDefinitionSGID, Table ng911StreetNameAliasTable, RowCursor SgidCursor, string aliasType, StreamWriter streamWriter)
+        public static void Execute(FeatureClassDefinition featureClassDefinitionSGID, Table ng911StreetNameAliasTable, RowCursor SgidCursor, string aliasType, StreamWriter streamWriter, Int32 aliasNameRowCount)
         {
             try
             {
@@ -23,8 +23,9 @@ namespace NextGen911DataLoader.commands
                     rowBuffer["DateUpdate"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UPDATED"));
                     rowBuffer["Effective"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EFFECTIVE"));
                     rowBuffer["Expire"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EXPIRE"));
-                    rowBuffer["RCL_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID"));
-                    rowBuffer["ASt_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID")).ToString() + "_" + aliasType;
+                    rowBuffer["RCL_NGUID"] = "RCL" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
+                    //rowBuffer["ASt_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID")).ToString() + "_" + aliasType;
+                    rowBuffer["ASt_NGUID"] = "AST" + aliasNameRowCount + "@gis.utah.gov";
 
                     // Populate common fields that need domain description values from SGID //
                     // ASt_PosDir //
