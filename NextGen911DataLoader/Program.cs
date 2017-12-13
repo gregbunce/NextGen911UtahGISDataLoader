@@ -25,11 +25,12 @@ namespace NextGen911DataLoader
             bool etlMileMarkers = false;
             bool etlRailRoads = false;
             bool etlLawEnforcement = false;
+            bool truncateLawEnforcement = false;
 
             // Check that minimum command line args are present.
             if (!(args.Length > 4))
             {
-                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law]");
+                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order)(append -t to layer name if you want to truncate the layer before the load. ex: law-t): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law]");
                 Console.Read();
                 return;
             }
@@ -49,6 +50,7 @@ namespace NextGen911DataLoader
                 switch (s.ToUpper()) // make the argument upper to allow the user to use any casing.
                 {
                     case "ROADS":
+                    case "ROADS-T":
                         streamWriter.WriteLine(" *" + s);
                         etlRoads = true;
                         break;
@@ -81,8 +83,20 @@ namespace NextGen911DataLoader
                         etlRailRoads = true;
                         break;
                     case "LAW":
-                        streamWriter.WriteLine(" *" + s);
-                        etlLawEnforcement = true;
+                    case "LAW-T":
+                        if (s.ToUpper() == "LAW-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlLawEnforcement = true;
+                            truncateLawEnforcement = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlLawEnforcement = true;
+                            truncateLawEnforcement = false;
+                        }
+
                         break;
                     default:
                         break;
@@ -170,7 +184,7 @@ namespace NextGen911DataLoader
             // ETL law enforcement to NG911
             if (etlLawEnforcement)
             {
-                commands.LoadLawEnforcement.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+                commands.LoadLawEnforcement.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateLawEnforcement);
             }
 
 
