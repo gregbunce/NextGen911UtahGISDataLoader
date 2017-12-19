@@ -114,7 +114,7 @@ namespace NextGen911DataLoader.commands
                 streamWriter.WriteLine();
                 streamWriter.WriteLine("ERROR MESSAGE...");
                 streamWriter.WriteLine("_______________________________________");
-                streamWriter.WriteLine("There was an error with LoadAddressPnts method." +
+                streamWriter.WriteLine("There was an error with AddRowToStreetNameAliasTable method." +
                 ex.Message + " " + ex.Source + " " + ex.InnerException + " " + ex.HResult + " " + ex.StackTrace + " " + ex);
             }
         }

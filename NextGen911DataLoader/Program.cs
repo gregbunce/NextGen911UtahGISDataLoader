@@ -38,11 +38,17 @@ namespace NextGen911DataLoader
             bool truncateEMS = false;
             bool etlFire = false;
             bool truncateFire = false;
+            bool etlHydroLines = false;
+            bool truncateHydroLines = false;
+            bool etlHydroPoly = false;
+            bool truncateHydroPoly = false;
+            bool etlCellTower = false;
+            bool truncateCellTower = false;
 
             // Check that minimum command line args are present.
             if (!(args.Length > 4))
             {
-                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order)(append -t to layer name if you want to truncate the layer before the load. ex: law-t): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law, ems, fire]");
+                Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order)(append -t to layer name if you want to truncate the layer before the load. ex: law-t): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law, ems, fire, hydroLine, hydroPoly]");
                 Console.Read();
                 return;
             }
@@ -226,6 +232,51 @@ namespace NextGen911DataLoader
                             truncateFire = false;
                         }
                         break;
+                    case "HYDROLINE":
+                    case "HYDROLINE-T":
+                        if (s.ToUpper() == "HYDROLINE-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlHydroLines = true;
+                            truncateHydroLines = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlHydroLines = true;
+                            truncateHydroLines = false;
+                        }
+                        break;
+                    case "HYDROPOLY":
+                    case "HYDROPOLY-T":
+                        if (s.ToUpper() == "HYDROPOLY-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlHydroPoly = true;
+                            truncateHydroPoly = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlHydroPoly = true;
+                            truncateHydroPoly = false;
+                        }
+                        break;
+                    case "CELLTOWER":
+                    case "CELLTOWER-T":
+                        if (s.ToUpper() == "CELLTOWER-T")
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlCellTower = true;
+                            truncateCellTower = true;
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine(" *" + s);
+                            etlCellTower = true;
+                            truncateCellTower = false;
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -326,6 +377,19 @@ namespace NextGen911DataLoader
             {
                 commands.LoadFire.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateFire);
             }
+
+            // ETL hydroline to NG911
+            if (etlHydroLines)
+            {
+                commands.LoadHydroPolyline.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateHydroLines);
+            }
+
+            // ETL hydropoly to NG911
+            if (etlHydroPoly)
+            {
+                commands.LoadHydroPolygon.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateHydroPoly);
+            }
+
 
 
             // Test Dictionary for county number lookup.

@@ -38,7 +38,7 @@ namespace NextGen911DataLoader.commands
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {
-                                    WhereClause = "RT_NAME = '0215'"
+                                    //WhereClause = "RT_NAME = '0215'"
                                 };
 
                                 // Get a Cursor of SGID features.

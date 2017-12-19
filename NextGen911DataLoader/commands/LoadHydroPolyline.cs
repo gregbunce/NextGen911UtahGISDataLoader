@@ -38,7 +38,7 @@ namespace NextGen911DataLoader.commands
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {
-                                WhereClause = "OBJECTID < 100"
+                                //WhereClause = "OBJECTID < 100"
                             };
 
                             // Get a Cursor of SGID features.
@@ -68,7 +68,6 @@ namespace NextGen911DataLoader.commands
                                         rowBuffer["HS_NGUID"] = "HYDS" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
                                         rowBuffer["HS_Type"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("FType_Text"));
                                         rowBuffer["HS_Name"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("GNIS_Name"));
-
 
                                         // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                         using (Row row = ng911_FeatClass.CreateRow(rowBuffer))

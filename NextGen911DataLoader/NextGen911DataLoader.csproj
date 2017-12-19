@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="commands\AddRowToCompleteLandmarkTable.cs" />
     <Compile Include="commands\AddRowToStreetNameAliasTable.cs" />
     <Compile Include="commands\ConnectToSGID.cs" />
     <Compile Include="commands\ETL_CodeStub.cs" />

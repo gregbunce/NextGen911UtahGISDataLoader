@@ -36,7 +36,7 @@ namespace NextGen911DataLoader.commands
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {
-                                WhereClause = "OBJECTID < 100"
+                                //WhereClause = "OBJECTID < 100"
                             };
 
                             // Get a Cursor of SGID features.
