@@ -6,7 +6,7 @@ import sys
 # Set local variables
 # in_features = ['climate.shp', 'majorrds.shp']
 in_features = sys.argv[1]
-out_location = 'C:/temp/ng911_scratch.gdb'
+out_location = 'C:/temp/ng911scratch.gdb'
 
 # Execute FeatureClassToGeodatabase
 arcpy.FeatureClassToGeodatabase_conversion(in_features, out_location)
