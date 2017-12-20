@@ -79,7 +79,6 @@
     <Compile Include="commands\PopuateCountyValuesDict.cs" />
     <Compile Include="commands\RemoveAlphaCharsFromString.cs" />
     <Compile Include="commands\ReprojectPoint.cs" />
-    <Compile Include="commands\TruncateTable_gp_tool.cs" />
     <Compile Include="commands\ExecuteArcpyScript.cs" />
     <Compile Include="extentions\DictionaryExtension.cs" />
     <Compile Include="extentions\StringExtension.cs" />
@@ -91,6 +90,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts_arcpy\CreateFileGeodatabase.py" />
+    <Content Include="scripts_arcpy\ExportFeatClassToScratchFGDB.py" />
+    <Content Include="scripts_arcpy\RenameFGDB.py" />
     <Content Include="scripts_arcpy\TrancateTable.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

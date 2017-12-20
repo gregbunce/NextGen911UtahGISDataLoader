@@ -16,6 +16,42 @@ namespace NextGen911DataLoader
 
         static void Main(string[] args)
         {
+
+            // Check if the scratch geodatabase exists.
+            if (Directory.Exists("C:/temp/ng911scratch.gdb"))
+            {
+                Console.WriteLine("Exists");
+
+                // Rename the existing fgdb.
+                string renameDate = DateTime.Now.ToString("yyyyMMddHHmm");
+
+                string pythonFileRename = "../../scripts_arcpy/RenameFGDB.py";
+                commands.ExecuteArcpyScript.run_arcpy(pythonFileRename, renameDate); 
+
+            }
+            else
+            {
+                // Do nothing.
+                Console.WriteLine("Does Not Exists");
+            }
+
+            // Create a new (scratch) file geodatabase via arcpy script.
+            string pythonFileCreateFGDB = "../../scripts_arcpy/CreateFileGeodatabase.py";
+            string dateNow = DateTime.Now.ToString("yyyyMMdd_HHmm");
+            commands.ExecuteArcpyScript.run_arcpy(pythonFileCreateFGDB, @"C:/temp", "ng911scratch");
+
+            // import data to the scratch database (actually, export sgid data).
+            string counties = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/sgid.agrc.utah.gov.sde/SGID10.BOUNDARIES.Counties";
+            string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
+            commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, counties);
+
+
+
+            Console.WriteLine("done!");
+            Console.Read();
+            return;
+
+
             bool etlRoads = false;
             bool truncateRoads = false;
             bool etlAddresspoints = false;
@@ -46,7 +82,7 @@ namespace NextGen911DataLoader
             bool truncateCellTower = false;
 
             // Check that minimum command line args are present.
-            if (!(args.Length > 4))
+            if (!(args.Length > 4))  
             {
                 Console.WriteLine("You must provide the following command line arguments: [location of output fgdb database], [sde instance], [sde database name], [sde user/pass], [list of valid layer names to elt (in any order)(append -t to layer name if you want to truncate the layer before the load. ex: law-t): roads, addresspoints, psaps, inc, uninc, counties, milemarkers, railroads, law, ems, fire, hydroLine, hydroPoly]");
                 Console.Read();
