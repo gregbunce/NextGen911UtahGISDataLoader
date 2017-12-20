@@ -17,9 +17,11 @@ namespace NextGen911DataLoader.commands
         {
             try
             {
+                string scratchFgdbPath = "C:\temp\ng911scratch.gdb";
+
                 // connect to sgid, ng911, open feature classes and table
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
-                using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
+                using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))), NG911Scratch = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(scratchFgdbPath))))
                 using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("RoadCenterlines"))
                 using (Table ng911StreetNameAliasTable = NG911Utah.OpenDataset<Table>("StreetNameAliasTable"))
                 {
@@ -41,7 +43,8 @@ namespace NextGen911DataLoader.commands
                     }
 
                     // get SGID Feature Classes.
-                    using (FeatureClass sgidRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
+                    //using (FeatureClass sourceRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
+                    using (FeatureClass sourceRoads = NG911Scratch.OpenDataset<FeatureClass>("Roads"))
                     {
                         QueryFilter queryFilter1 = new QueryFilter
                         {
@@ -50,62 +53,62 @@ namespace NextGen911DataLoader.commands
                         };
 
                         // Get a Cursor of SGID features.
-                        using (RowCursor SgidCursor = sgidRoads.Search(queryFilter1, true))
+                        using (RowCursor rouceRoadsCursor = sourceRoads.Search(queryFilter1, true))
                         {
                             // Loop through the sgid features.
-                            while (SgidCursor.MoveNext())
+                            while (rouceRoadsCursor.MoveNext())
                             {
                                 // Get a feature class definition for the NG911 feature class.
                                 FeatureClassDefinition featureClassDefinitionNG911 = ng911_FeatClass.GetDefinition();
 
                                 // Get a feature class definition for the SGID feature class
-                                FeatureClassDefinition featureClassDefinitionSGID = sgidRoads.GetDefinition();
+                                FeatureClassDefinition featureClassDefinitionSourceRoads = sourceRoads.GetDefinition();
 
                                 //Row SgidRow = SgidCursor.Current;
-                                Feature sgidFeature = (Feature)SgidCursor.Current;
+                                Feature sourceFeature = (Feature)rouceRoadsCursor.Current;
 
                                 // Create row buffer.
                                 using (RowBuffer rowBuffer = ng911_FeatClass.CreateRowBuffer())
                                 {
                                     // Create geometry (via rowBuffer).
-                                    rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
+                                    rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sourceFeature.GetShape();
 
                                     // Create attributes for direct transfer fields (via rowBuffer). //
-                                    rowBuffer["Source"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SOURCE"));
-                                    rowBuffer["StreetName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME"));
-                                    rowBuffer["DateUpdated"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UPDATED"));
-                                    rowBuffer["FromAddr_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("FROMADDR_L"));
-                                    rowBuffer["ToAddr_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("TOADDR_L"));
-                                    rowBuffer["FromAddr_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("FROMADDR_R"));
-                                    rowBuffer["ToAddr_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("TOADDR_R"));
-                                    rowBuffer["Effective"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EFFECTIVE"));
-                                    rowBuffer["Expire"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("EXPIRE"));
+                                    rowBuffer["Source"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("SOURCE"));
+                                    rowBuffer["StreetName"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("NAME"));
+                                    rowBuffer["DateUpdated"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("UPDATED"));
+                                    rowBuffer["FromAddr_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("FROMADDR_L"));
+                                    rowBuffer["ToAddr_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("TOADDR_L"));
+                                    rowBuffer["FromAddr_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("FROMADDR_R"));
+                                    rowBuffer["ToAddr_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("TOADDR_R"));
+                                    rowBuffer["Effective"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("EFFECTIVE"));
+                                    rowBuffer["Expire"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("EXPIRE"));
                                     //rowBuffer["RCL_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID"));
-                                    rowBuffer["RCL_NGUID"] = "RCL" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
-                                    rowBuffer["Parity_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PARITY_L"));
-                                    rowBuffer["Parity_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PARITY_R"));
-                                    rowBuffer["ESN_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ESN_L"));
-                                    rowBuffer["ESN_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ESN_R"));
-                                    rowBuffer["MSAGComm_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("MSAGCOMM_L"));
-                                    rowBuffer["MSAGComm_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("MSAGCOMM_R"));
+                                    rowBuffer["RCL_NGUID"] = "RCL" + rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
+                                    rowBuffer["Parity_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_L"));
+                                    rowBuffer["Parity_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_R"));
+                                    rowBuffer["ESN_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_L"));
+                                    rowBuffer["ESN_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_R"));
+                                    rowBuffer["MSAGComm_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("MSAGCOMM_L"));
+                                    rowBuffer["MSAGComm_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("MSAGCOMM_R"));
                                     rowBuffer["Country_L"] = "US";
                                     rowBuffer["Country_R"] = "US";
                                     rowBuffer["State_L"] = "UT";
                                     rowBuffer["State_R"] = "UT";
-                                    rowBuffer["IncMuni_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("INCMUNI_L"));
-                                    rowBuffer["IncMuni_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("INCMUNI_R"));
-                                    rowBuffer["UnincCom_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNINCCOM_L"));
-                                    rowBuffer["UnincCom_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNINCCOM_R"));
-                                    rowBuffer["NbrhdCom_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NBRHDCOM_L"));
-                                    rowBuffer["NbrhdCom_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NBRHDCOM_R"));
-                                    rowBuffer["PostCode_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_L"));
-                                    rowBuffer["PostCode_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIPCODE_R"));
-                                    rowBuffer["PostComm_L"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_L"));
-                                    rowBuffer["PostComm_R"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("POSTCOMM_R"));
-                                    rowBuffer["SpeedLimit"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SPEED_LMT"));
+                                    rowBuffer["IncMuni_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("INCMUNI_L"));
+                                    rowBuffer["IncMuni_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("INCMUNI_R"));
+                                    rowBuffer["UnincCom_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("UNINCCOM_L"));
+                                    rowBuffer["UnincCom_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("UNINCCOM_R"));
+                                    rowBuffer["NbrhdCom_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("NBRHDCOM_L"));
+                                    rowBuffer["NbrhdCom_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("NBRHDCOM_R"));
+                                    rowBuffer["PostCode_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ZIPCODE_L"));
+                                    rowBuffer["PostCode_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ZIPCODE_R"));
+                                    rowBuffer["PostComm_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTCOMM_L"));
+                                    rowBuffer["PostComm_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTCOMM_R"));
+                                    rowBuffer["SpeedLimit"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("SPEED_LMT"));
 
                                     // Derive RoadClass from COFIPS.
-                                    Int32 cofips = Convert.ToInt32(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("CARTOCODE")));
+                                    Int32 cofips = Convert.ToInt32(rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("CARTOCODE")));
                                     switch (cofips)
                                     {
                                         case 1: // Interstates
@@ -169,7 +172,7 @@ namespace NextGen911DataLoader.commands
 
                                     // Derive OneWay from ONEWAY.
                                     //rowBuffer["OneWay"] = SgidPsapCursor.Current.GetOriginalValue(SgidPsapCursor.Current.FindField("ONEWAY"));
-                                    string oneWay = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ONEWAY")).ToString();
+                                    string oneWay = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ONEWAY")).ToString();
                                     switch (oneWay)
                                     {
                                         case "0": // Two way
@@ -189,7 +192,7 @@ namespace NextGen911DataLoader.commands
 
                                     // Create attributes for fields that need to Get Domain Description value (Street Type in NG911 is fully spelled out). //
                                     // St_PosTyp //
-                                    string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "POSTTYPE", "POSTTYPE");
+                                    string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceRoads, rouceRoadsCursor, "POSTTYPE", "POSTTYPE");
                                     codedDomainValue.Trim();
                                     if (codedDomainValue != "")
                                     {
@@ -199,7 +202,7 @@ namespace NextGen911DataLoader.commands
                                     }
 
                                     // St_Predir //
-                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "PREDIR", "PREDIR");
+                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceRoads, rouceRoadsCursor, "PREDIR", "PREDIR");
                                     codedDomainValue.Trim();
                                     if (codedDomainValue != "")
                                     {
@@ -209,7 +212,7 @@ namespace NextGen911DataLoader.commands
                                     }
 
                                     // St_PosDir //
-                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "POSTDIR", "POSTDIR");
+                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceRoads, rouceRoadsCursor, "POSTDIR", "POSTDIR");
                                     codedDomainValue.Trim();
                                     if (codedDomainValue != "")
                                     {
@@ -219,7 +222,7 @@ namespace NextGen911DataLoader.commands
                                     }
 
                                     // County_L //
-                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "COUNTY_L", "COUNTY_L");
+                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceRoads, rouceRoadsCursor, "COUNTY_L", "COUNTY_L");
                                     codedDomainValue.Trim();
                                     if (codedDomainValue != "")
                                     {
@@ -237,7 +240,7 @@ namespace NextGen911DataLoader.commands
                                     }
 
                                     // County_R //
-                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "COUNTY_R", "COUNTY_R");
+                                    codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceRoads, rouceRoadsCursor, "COUNTY_R", "COUNTY_R");
                                     codedDomainValue.Trim();
                                     if (codedDomainValue != "")
                                     {
@@ -285,25 +288,25 @@ namespace NextGen911DataLoader.commands
 
                                 // ALIAS STREET NAME TABLE >>>
                                 // Check if the sgid road segment contains alias names in the AN_NAME.
-                                if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AN_NAME")).ToString() != "")
+                                if (rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("AN_NAME")).ToString() != "")
                                 {
                                     aliasNameRowCount = aliasNameRowCount + 1;
                                     // Add alias street name to StreetNameAliasTable.
-                                    AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "AN", streamWriter, aliasNameRowCount);
+                                    AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSourceRoads, ng911StreetNameAliasTable, rouceRoadsCursor, "AN", streamWriter, aliasNameRowCount);
                                 }
                                 // Check if the sgid road segment contains alias names in the A1_NAME.
-                                if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("A1_NAME")).ToString() != "")
+                                if (rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("A1_NAME")).ToString() != "")
                                 {
                                     aliasNameRowCount = aliasNameRowCount + 1;
                                     // Add alias street name to StreetNameAliasTable.
-                                    AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A1", streamWriter, aliasNameRowCount);
+                                    AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSourceRoads, ng911StreetNameAliasTable, rouceRoadsCursor, "A1", streamWriter, aliasNameRowCount);
                                 }
                                 // Check if the sgid road segment contains alias names in the A2_NAME.
-                                if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("A2_NAME")).ToString() != "")
+                                if (rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("A2_NAME")).ToString() != "")
                                 {
                                     aliasNameRowCount = aliasNameRowCount + 1;
                                     // Add alias street name to StreetNameAliasTable.
-                                    AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSGID, ng911StreetNameAliasTable, SgidCursor, "A2", streamWriter, aliasNameRowCount);
+                                    AddRowToStreetNameAliasTable.Execute(featureClassDefinitionSourceRoads, ng911StreetNameAliasTable, rouceRoadsCursor, "A2", streamWriter, aliasNameRowCount);
                                 }
                                 // <<< ALIAS STREET NAME TABLE
                             }

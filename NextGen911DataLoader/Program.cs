@@ -357,8 +357,6 @@ namespace NextGen911DataLoader
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads);
                 Console.WriteLine("done importing roads");
-                Console.Read();
-                return;
 
                 // Call etl code.
                 commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateRoads);
