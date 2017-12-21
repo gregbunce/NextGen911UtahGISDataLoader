@@ -122,7 +122,7 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["ESN"] = "0";
                                             //rowBuffer["MSAGComm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["Post_Comm"] = "";
-                                            ////rowBuffer["Post_Code"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode"));            
+                                            rowBuffer["Post_Code"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode"));            
                                             //rowBuffer["Post_Code4"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["Building"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("Building"));
                                             //rowBuffer["Floor"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
@@ -302,18 +302,19 @@ namespace NextGen911DataLoader.commands
                                             }
 
 
-                                            // >>> Create attributtes for fields that need a spatial intersect (point in polygon query).
-                                            // Get intersected boundaries.
-                                            List<string> listOfFields = new List<string>(new string[] { "NAME", "ZIP5" });
-                                            List<string> retunedAttrValues = PointInPolygonQuery.Execute(mapPoint, sgidZipCodes, listOfFields);
+                                            //// >>> Create attributtes for fields that need a spatial intersect (point in polygon query).
+                                            //// Get intersected boundaries.
+                                            //List<string> listOfFields = new List<string>(new string[] { "NAME", "ZIP5" });
+                                            //List<string> retunedAttrValues = PointInPolygonQuery.Execute(mapPoint, sgidZipCodes, listOfFields);
 
-                                            // Check if null values were returned.
-                                            if (retunedAttrValues.Count() != 0)
-                                            {
-                                                rowBuffer["Post_Comm"] = retunedAttrValues[0]; // 0 = NAME ; 1 = ZIP5
-                                                rowBuffer["Post_Code"] = retunedAttrValues[1]; // 0 = NAME ; 1 = ZIP5
-                                            }
-                                            // <<< Create attributtes for fields that need a spatial intersect (point in polygon query).
+                                            //// Check if null values were returned.
+                                            //if (retunedAttrValues.Count() != 0)
+                                            //{
+                                            //    rowBuffer["Post_Comm"] = retunedAttrValues[0]; // 0 = NAME ; 1 = ZIP5
+                                            //    rowBuffer["Post_Code"] = retunedAttrValues[1]; // 0 = NAME ; 1 = ZIP5
+                                            //}
+                                            //// <<< Create attributtes for fields that need a spatial intersect (point in polygon query).
+
 
                                             // create the row, with attributes and geometry via rowBuffer, in the ng911 database
                                             using (Row row = ng911_FeatClass.CreateRow(rowBuffer))

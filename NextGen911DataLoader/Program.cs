@@ -367,8 +367,6 @@ namespace NextGen911DataLoader
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts);
                 Console.WriteLine("   done importing address points");
-                Console.Read();
-                return;
 
                 // Call etl code.
                 commands.LoadAddressPnts.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateAddressPoints);
