@@ -17,35 +17,6 @@ namespace NextGen911DataLoader
         static void Main(string[] args)
         {
 
-            // Check if the scratch geodatabase exists, if so rename it with today's date.
-            if (Directory.Exists("C:/temp/ng911scratch.gdb"))
-            {
-                Console.WriteLine("Rename the scratch database.");
-
-                // Rename the existing fgdb.
-                string renameDate = DateTime.Now.ToString("yyyyMMddHHmm");
-
-                string pythonFileRename = "../../scripts_arcpy/RenameFGDB.py";
-                commands.ExecuteArcpyScript.run_arcpy(pythonFileRename, renameDate); 
-
-            }
-            else
-            {
-                // Do nothing.
-            }
-
-            // Create a new (scratch) file geodatabase via arcpy script.
-            Console.WriteLine("Create a scratch fgdb database for sgid layers.");
-            string pythonFileCreateFGDB = "../../scripts_arcpy/CreateFileGeodatabase.py";
-            string dateNow = DateTime.Now.ToString("yyyyMMdd_HHmm");
-            commands.ExecuteArcpyScript.run_arcpy(pythonFileCreateFGDB, @"C:/temp", "ng911scratch");
-
-            // import data to the scratch database (actually, export sgid data).
-            ////string counties = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/sgid.agrc.utah.gov.sde/SGID10.BOUNDARIES.Counties";
-            ////string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
-            ////commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, counties);
-
-
             bool etlRoads = false;
             bool truncateRoads = false;
             bool etlAddresspoints = false;
@@ -82,6 +53,31 @@ namespace NextGen911DataLoader
                 Console.Read();
                 return;
             }
+
+
+            // Check if the scratch geodatabase exists, if so rename it with today's date.
+            if (Directory.Exists("C:/temp/ng911scratch.gdb"))
+            {
+                Console.WriteLine("Rename the scratch database.");
+
+                // Rename the existing fgdb.
+                string renameDate = DateTime.Now.ToString("yyyyMMddHHmm");
+
+                string pythonFileRename = "../../scripts_arcpy/RenameFGDB.py";
+                commands.ExecuteArcpyScript.run_arcpy(pythonFileRename, renameDate);
+
+            }
+            else
+            {
+                // Do nothing.
+            }
+
+            // Create a new (scratch) file geodatabase via arcpy script.
+            Console.WriteLine("Creating scratch fgdb database for sgid layers....");
+            string pythonFileCreateFGDB = "../../scripts_arcpy/CreateFileGeodatabase.py";
+            string dateNow = DateTime.Now.ToString("yyyyMMdd_HHmm");
+            commands.ExecuteArcpyScript.run_arcpy(pythonFileCreateFGDB, @"C:/temp", "ng911scratch");
+            Console.WriteLine("Done creating scratch fgdb database.");
 
             // Setup a file stream and a stream writer to write out the log and any odd unexpected stuff that happens.
             string path = @"C:\temp\NextGen911DataLoaderLog" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + ".txt";
@@ -356,7 +352,7 @@ namespace NextGen911DataLoader
                 string sgidRoads = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/sgid.agrc.utah.gov.sde/SGID10.Transportation.Roads";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads);
-                Console.WriteLine("done importing roads");
+                Console.WriteLine("   done importing roads");
 
                 // Call etl code.
                 commands.LoadRoads.Execute(sgidConnectionProperties, fgdbPath, streamWriter, truncateRoads);
@@ -366,10 +362,11 @@ namespace NextGen911DataLoader
             if (etlAddresspoints)
             {
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
+                Console.WriteLine("importing address points...");
                 string sgidAddressPnts = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/sgid.agrc.utah.gov.sde/SGID10.Location.AddressPoints";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts);
-                Console.WriteLine("imported address points");
+                Console.WriteLine("   done importing address points");
                 Console.Read();
                 return;
 

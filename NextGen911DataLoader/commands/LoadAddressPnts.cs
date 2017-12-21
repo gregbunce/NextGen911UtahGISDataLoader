@@ -18,9 +18,12 @@ namespace NextGen911DataLoader.commands
         {
             try
             {
+                // Create connection path to the scratch database.
+                string scratchFgdbPath = "C:\\temp\\ng911scratch.gdb";
+
                 // connect to sgid, ng911, open feature classes and table
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
-                using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
+                using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))), NG911Scratch = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(scratchFgdbPath))))
                 using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("AddressPoints"))
                 using (Table ng911_CompleteLandmarkTable = NG911Utah.OpenDataset<Table>("LandmarkNameCompleteAliasTable"), ng911_PartLandmarkTable = NG911Utah.OpenDataset<Table>("LandmarkNamePartTable"))
                 {
@@ -31,83 +34,86 @@ namespace NextGen911DataLoader.commands
                     // Check if the user wants to truncate the layer first
                     if (truncate)
                     {
+                        Console.WriteLine("truncating address points feature class....");
                         string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
                         string pythonFile = "../../scripts_arcpy/TrancateTable.py";
                         commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
+                        Console.WriteLine("   done truncating address points feature class");
                     }
 
-                    // get SGID Feature Classes.
-                    using (FeatureClass sgidRoads = sgid.OpenDataset<FeatureClass>("SGID10.LOCATION.AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
+                    // get SGID Feature Classes - or the Scratch database Feature Class (uncomment the appropriate one)
+                    //using (FeatureClass sourceAddrPnts = sgid.OpenDataset<FeatureClass>("SGID10.LOCATION.AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
+                    using (FeatureClass sourceAddrPnts = NG911Scratch.OpenDataset<FeatureClass>("AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
                     {
                         QueryFilter queryFilter1 = new QueryFilter
                         {
                             //WhereClause = "AddSystem = 'SALT LAKE CITY' AND LandmarkName LIKE '%university%'"
                             //WhereClause = "AddSystem = 'BLANDING' AND STREETNAME = '300'"
-                            WhereClause = "OBJECTID > 9832368"
+                            //WhereClause = "OBJECTID > 9832368"
                         };
 
                         // Get a Cursor of SGID features.
-                        using (RowCursor SgidCursor = sgidRoads.Search(queryFilter1, true))
+                        using (RowCursor sourceCursor = sourceAddrPnts.Search(queryFilter1, true))
                         {
                             // Loop through the sgid features.
-                            while (SgidCursor.MoveNext())
+                            while (sourceCursor.MoveNext())
                             {
                                 // Get a feature class definition for the NG911 feature class.
                                 FeatureClassDefinition featureClassDefinitionNG911 = ng911_FeatClass.GetDefinition();
 
                                 // Get a feature class definition for the SGID feature class
-                                FeatureClassDefinition featureClassDefinitionSGID = sgidRoads.GetDefinition();
+                                FeatureClassDefinition featureClassDefinitionSourceAddrPnts = sourceAddrPnts.GetDefinition();
 
                                 //Row SgidRow = SgidCursor.Current;
-                                Feature sgidFeature = (Feature)SgidCursor.Current;
+                                Feature sourceFeature = (Feature)sourceCursor.Current;
 
                                 // Create row buffer.
                                 using (RowBuffer rowBuffer = ng911_FeatClass.CreateRowBuffer())
                                 {
                                     try
                                     {
-                                        if (sgidFeature.GetShape() != null)
+                                        if (sourceFeature.GetShape() != null)
                                         {
                                             // Create geometry (via rowBuffer).
-                                            rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sgidFeature.GetShape();
+                                            rowBuffer[featureClassDefinitionNG911.GetShapeField()] = sourceFeature.GetShape();
 
                                             // Create attributes for direct transfer fields (via rowBuffer). //
-                                            rowBuffer["Source"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddSource"));
-                                            rowBuffer["DateUpdate"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("LoadDate"));
+                                            rowBuffer["Source"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddSource"));
+                                            rowBuffer["DateUpdate"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("LoadDate"));
                                             //rowBuffer["Effective"] = "";
                                             //rowBuffer["Expire"] = "";
-                                            rowBuffer["Site_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UTAddPtID")).ToString().Trim() + "@gis.utah.gov";
+                                            rowBuffer["Site_NGUID"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("UTAddPtID")).ToString().Trim() + "@gis.utah.gov";
                                             //rowBuffer["Site_NGUID"] = "SITE" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
                                             rowBuffer["Country"] = "US";
                                             rowBuffer["State"] = "UT";
                                             //rowBuffer["AddCode"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["AddDataURI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Inc_Muni"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("City"));
+                                            rowBuffer["Inc_Muni"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("City"));
                                             rowBuffer["Uninc_Comm"] = "";
                                             //rowBuffer["Nbrhd_Comm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["AddNum_Pre"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
 
                                             //rowBuffer["Add_Number"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum"));
                                             // Check for alpha characters in the AddNum field.
-                                            if (Regex.IsMatch(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum")).ToString(), ".*?[a-zA-Z].*?"))
+                                            if (Regex.IsMatch(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddNum")).ToString(), ".*?[a-zA-Z].*?"))
                                             {
                                                 // Remove the number and log the procedure
-                                                string addNumAlphaRemoved = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum")).ToString();
+                                                string addNumAlphaRemoved = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddNum")).ToString();
                                                 addNumAlphaRemoved = Regex.Replace(addNumAlphaRemoved, "[^0-9.]", "");
 
                                                 rowBuffer["Add_Number"] = addNumAlphaRemoved;
-                                                streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "Removed alpha character in AddNum");
+                                                streamWriter.WriteLine("AddressPoints" + "," + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "Removed alpha character in AddNum");
                                             }
                                             else
                                             {
-                                                rowBuffer["Add_Number"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNum"));
+                                                rowBuffer["Add_Number"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddNum"));
                                             }
 
-                                            rowBuffer["AddNum_Suf"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddNumSuffix"));
+                                            rowBuffer["AddNum_Suf"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddNumSuffix"));
                                             //rowBuffer["St_PreMod"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["St_PreTyp"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["St_PreSep"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["StreetName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("StreetName"));
+                                            rowBuffer["StreetName"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("StreetName"));
                                             //rowBuffer["St_PosMod"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["LSt_PreDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["LSt_Name"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
@@ -115,20 +121,20 @@ namespace NextGen911DataLoader.commands
                                             //rowBuffer["LStPosDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["ESN"] = "0";
                                             //rowBuffer["MSAGComm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            ////rowBuffer["Post_Comm"] = "";
-                                            ////rowBuffer["Post_Code"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZipCode"));            
+                                            //rowBuffer["Post_Comm"] = "";
+                                            ////rowBuffer["Post_Code"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode"));            
                                             //rowBuffer["Post_Code4"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Building"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("Building"));
+                                            rowBuffer["Building"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("Building"));
                                             //rowBuffer["Floor"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Unit"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UnitID"));
+                                            rowBuffer["Unit"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("UnitID"));
                                             //rowBuffer["Room"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["Seat"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Addtl_Loc"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AddSystem"));
-                                            rowBuffer["LandmkName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("LandmarkName"));
+                                            rowBuffer["Addtl_Loc"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddSystem"));
+                                            rowBuffer["LandmkName"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("LandmarkName"));
                                             //rowBuffer["Mile_Post"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["Place_Type"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType"));
                                             //rowBuffer["Placement"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation"));
-                                            MapPoint mapPoint = sgidFeature.GetShape() as MapPoint;
+                                            MapPoint mapPoint = sourceFeature.GetShape() as MapPoint;
                                             MapPoint mapPointReprojected = ReprojectPoint.Execute(mapPoint, 4326);
                                             rowBuffer["Long"] = mapPointReprojected.X;
                                             rowBuffer["Lat"] = mapPointReprojected.Y;
@@ -136,9 +142,9 @@ namespace NextGen911DataLoader.commands
 
 
                                             // Derive Place_Type from PtType.
-                                            if (!(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType")) == null))
+                                            if (!(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtType")) == null))
                                             {
-                                                string placeType = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType")).ToString();
+                                                string placeType = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtType")).ToString();
                                                 if (placeType.Trim() != "")
                                                 {
                                                     switch (placeType)
@@ -190,7 +196,7 @@ namespace NextGen911DataLoader.commands
                                                             {
                                                                 rowBuffer["Place_Type"] = "N/A";
                                                                 // write out an error report as there may be a new domain
-                                                                streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "SGID Domain for PtType is not recognized : " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType")).ToString() + ".. Possibly new?");
+                                                                streamWriter.WriteLine("AddressPoints" + "," + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "SGID Domain for PtType is not recognized : " + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtType")).ToString() + ".. Possibly new?");
                                                             }
                                                             break;
                                                     }
@@ -199,9 +205,9 @@ namespace NextGen911DataLoader.commands
 
 
                                             // Derive Placement from PtLocation.
-                                            if (!(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation")) == null))
+                                            if (!(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtLocation")) == null))
                                             {
-                                                string pntLocation = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation")).ToString();
+                                                string pntLocation = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtLocation")).ToString();
                                                 if (pntLocation.Trim() != "")
                                                 {
                                                     switch (pntLocation)
@@ -238,7 +244,7 @@ namespace NextGen911DataLoader.commands
                                                             {
                                                                 rowBuffer["Placement"] = "N/A";
                                                                 // write out an error report as there may be a new domain
-                                                                streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "SGID Domain for PtLocation is not recognized: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtLocation")).ToString() + ". Possibly new?");
+                                                                streamWriter.WriteLine("AddressPoints" + "," + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "SGID Domain for PtLocation is not recognized: " + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtLocation")).ToString() + ". Possibly new?");
                                                             }
                                                             break;
                                                     }
@@ -248,7 +254,7 @@ namespace NextGen911DataLoader.commands
 
                                             // Create attributes for fields that need to Get Domain Description value (Street Type in NG911 is fully spelled out). //
                                             // CountyID //
-                                            string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "CountyID", "CountyID");
+                                            string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "CountyID", "CountyID");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -266,7 +272,7 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // St_PosTyp //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "StreetType", "StreetType");
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "StreetType", "StreetType");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -276,7 +282,7 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // St_PreDir //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "PrefixDir", "PrefixDir");
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "PrefixDir", "PrefixDir");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -286,7 +292,7 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // St_PosDir //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSGID, SgidCursor, "SuffixDir", "SuffixDir");
+                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "SuffixDir", "SuffixDir");
                                             codedDomainValue.Trim();
                                             if (codedDomainValue != "")
                                             {
@@ -313,7 +319,7 @@ namespace NextGen911DataLoader.commands
                                             using (Row row = ng911_FeatClass.CreateRow(rowBuffer))
                                             {
                                                 Console.WriteLine("AddrPntRowCount: " + addressTableCreateRowCount);
-                                                Console.WriteLine("AddrPntSgidOID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
+                                                Console.WriteLine("AddrPntSourceOID: " + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString());
                                                 addressTableCreateRowCount = addressTableCreateRowCount + 1;
                                             }
 
@@ -336,8 +342,8 @@ namespace NextGen911DataLoader.commands
                                         }
                                         else // null geometry was found in the sgid address point layer, skip this feature and log it to the report.
                                         {
-                                            streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "Null geometry found in SGID Feature");
-                                            Console.WriteLine("ObjectID: " + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString());
+                                            streamWriter.WriteLine("AddressPoints" + "," + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "Null geometry found in SGID Feature");
+                                            Console.WriteLine("ObjectID: " + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString());
                                         }
                                     }
                                     catch (GeodatabaseException exObj) // trap errors
@@ -351,9 +357,9 @@ namespace NextGen911DataLoader.commands
                                         using (RowBuffer rowBuffer2 = ng911_FeatClass.CreateRowBuffer())
                                         {
                                             rowBuffer2["StreetName"] = "ERROR";
-                                            rowBuffer2["Source"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString();
+                                            rowBuffer2["Source"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString();
 
-                                            streamWriter.WriteLine("AddressPoints" + "," + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "Caught Error: Check StreetName = Error.");
+                                            streamWriter.WriteLine("AddressPoints" + "," + sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("OBJECTID")).ToString() + "," + addressTableCreateRowCount + "," + "Caught Error: Check StreetName = Error.");
 
                                             using (Row row2 = ng911_FeatClass.CreateRow(rowBuffer2))
                                             {

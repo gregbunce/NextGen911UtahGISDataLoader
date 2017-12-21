@@ -17,7 +17,8 @@ namespace NextGen911DataLoader.commands
         {
             try
             {
-                string scratchFgdbPath = "C:\temp\ng911scratch.gdb";
+                // Create connection path to the scratch database.
+                string scratchFgdbPath = "C:\\temp\\ng911scratch.gdb";
 
                 // connect to sgid, ng911, open feature classes and table
                 using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
@@ -34,15 +35,16 @@ namespace NextGen911DataLoader.commands
                     // Check if the user wants to truncate the layer and table first.
                     if (truncate)
                     {
-                        Console.WriteLine("Truncate Roads and Roads Alias tables");
+                        Console.WriteLine("truncating roads feature class and roads alias table....");
                         string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
                         string tableLocation = fgdbPath + "\\" + ng911StreetNameAliasTable.GetName().ToString();
                         string pythonFile = "../../scripts_arcpy/TrancateTable.py";
                         commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
                         commands.ExecuteArcpyScript.run_arcpy(pythonFile, tableLocation);
+                        Console.WriteLine("   done truncating roads feature class and roads alias table");
                     }
 
-                    // get SGID Feature Classes.
+                    // get SGID Feature Classes - or the Scratch database Feature Class (uncomment the appropriate one)
                     //using (FeatureClass sourceRoads = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.Roads"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
                     using (FeatureClass sourceRoads = NG911Scratch.OpenDataset<FeatureClass>("Roads"))
                     {
