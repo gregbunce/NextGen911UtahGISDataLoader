@@ -70,7 +70,7 @@ namespace NextGen911DataLoader.commands
                                         rowBuffer["Agency_ID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AGENCY_ID"));
                                         //rowBuffer["ServiceURI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
                                         //rowBuffer["ServiceURN"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
-                                        //rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+                                        rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE"));
                                         //rowBuffer["AVcard_URI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
                                         rowBuffer["DsplayName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString().Trim();
 
