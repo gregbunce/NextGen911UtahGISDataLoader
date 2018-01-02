@@ -67,7 +67,17 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["ES_NGUID"] = "PSAP" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov"; ;
                                             rowBuffer["State"] = "UT";
                                             rowBuffer["Agency_ID"] = "";
-                                            rowBuffer["ServiceURI"] = "";
+                                            // replace spaces, dashes, and parenthesis in tel
+                                            if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER")) != null | SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER")) != "")
+                                            {
+                                                string phone = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER")).ToString();
+                                                phone = phone.Replace("-", "");
+                                                phone = phone.Replace("(", "");
+                                                phone = phone.Replace(")", "");
+                                                phone = phone.Replace(" ", "");
+                                                rowBuffer["ServiceURI"] = "tel:+" + phone;
+                                            }
+
                                             rowBuffer["ServiceURN"] = "";
                                             rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER"));
                                             rowBuffer["AVcard_URI"] = "";

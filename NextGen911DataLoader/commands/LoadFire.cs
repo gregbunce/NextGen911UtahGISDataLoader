@@ -68,7 +68,13 @@ namespace NextGen911DataLoader.commands
                                         //rowBuffer["Expire"] = DateTime.Now;
                                         rowBuffer["ES_NGUID"] = "FIRE" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
                                         rowBuffer["Agency_ID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("AGENCY_ID"));
-                                        //rowBuffer["ServiceURI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+                                        // replace spaces, dashes, and parenthesis in tel
+                                        string phone = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE")).ToString();
+                                        phone = phone.Replace("-", "");
+                                        phone = phone.Replace("(", "");
+                                        phone = phone.Replace(")", "");
+                                        phone = phone.Replace(" ", "");
+                                        rowBuffer["ServiceURI"] = "tel:+" + phone;
                                         //rowBuffer["ServiceURN"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
                                         rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE"));
                                         //rowBuffer["AVcard_URI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
