@@ -68,7 +68,7 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["State"] = "UT";
                                             rowBuffer["Agency_ID"] = "";
                                             // replace spaces, dashes, and parenthesis in tel
-                                            if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER")) != null | SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER")) != "")
+                                            if (SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER")) != null)
                                             {
                                                 string phone = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER")).ToString();
                                                 phone = phone.Replace("-", "");
@@ -78,7 +78,7 @@ namespace NextGen911DataLoader.commands
                                                 rowBuffer["ServiceURI"] = "tel:+" + phone;
                                             }
 
-                                            rowBuffer["ServiceURN"] = "";
+                                            rowBuffer["ServiceURN"] = "urn:service:sos";
                                             rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER"));
                                             rowBuffer["AVcard_URI"] = "";
                                             rowBuffer["DsplayName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PSAP_NAME"));

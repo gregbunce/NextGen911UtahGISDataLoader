@@ -71,7 +71,7 @@ namespace NextGen911DataLoader.commands
                                         rowBuffer["ES_NGUID"] = "LAW" + SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("OBJECTID")).ToString() + "@gis.utah.gov";
                                         rowBuffer["Agency_ID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME"));
                                         //rowBuffer["ServiceURI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
-                                        //rowBuffer["ServiceURN"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
+                                        rowBuffer["ServiceURN"] = "urn:service:sos";
                                         //rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
                                         //rowBuffer["AVcard_URI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
 
