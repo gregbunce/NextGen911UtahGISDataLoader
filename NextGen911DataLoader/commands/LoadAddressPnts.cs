@@ -282,23 +282,74 @@ namespace NextGen911DataLoader.commands
                                             }
 
                                             // St_PreDir //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "PrefixDir", "PrefixDir");
-                                            codedDomainValue.Trim();
-                                            if (codedDomainValue != "")
+                                            ////codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "PrefixDir", "PrefixDir");
+                                            ////codedDomainValue.Trim();
+                                            ////if (codedDomainValue != "")
+                                            ////{
+                                            ////    // Proper case.
+                                            ////    //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                            ////    rowBuffer["St_PreDir"] = codedDomainValue.ToUpper();
+                                            ////}
+                                            if (!(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PrefixDir")) == null))
                                             {
-                                                // Proper case.
-                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
-                                                rowBuffer["St_PreDir"] = codedDomainValue.ToUpper();
+                                                string preFixDir = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PrefixDir")).ToString();
+                                                if (preFixDir.Trim() != "")
+                                                {
+                                                    switch (preFixDir)
+                                                    {
+                                                        case "N":
+                                                            rowBuffer["St_PreDir"] = "NORTH";
+                                                            break;
+                                                        case "S":
+                                                            rowBuffer["St_PreDir"] = "SOUTH";
+                                                            break;
+                                                        case "E":
+                                                            rowBuffer["St_PreDir"] = "EAST";
+                                                            break;
+                                                        case "W":
+                                                            rowBuffer["St_PreDir"] = "WEST";
+                                                            break;
+                                                        default:
+                                                            rowBuffer["St_PreDir"] = "";
+                                                            break;
+                                                    }
+                                                }
                                             }
 
+
                                             // St_PosDir //
-                                            codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "SuffixDir", "SuffixDir");
-                                            codedDomainValue.Trim();
-                                            if (codedDomainValue != "")
+                                            ////codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceAddrPnts, sourceCursor, "SuffixDir", "SuffixDir");
+                                            ////codedDomainValue.Trim();
+                                            ////if (codedDomainValue != "")
+                                            ////{
+                                            ////    // Proper case.
+                                            ////    //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
+                                            ////    rowBuffer["St_PosDir"] = codedDomainValue.ToUpper();
+                                            ////}
+                                            if (!(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("SuffixDir")) == null))
                                             {
-                                                // Proper case.
-                                                //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
-                                                rowBuffer["St_PosDir"] = codedDomainValue.ToUpper();
+                                                string suffixDir = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("SuffixDir")).ToString();
+                                                if (suffixDir.Trim() != "")
+                                                {
+                                                    switch (suffixDir)
+                                                    {
+                                                        case "N":
+                                                            rowBuffer["St_PosDir"] = "NORTH";
+                                                            break;
+                                                        case "S":
+                                                            rowBuffer["St_PosDir"] = "SOUTH";
+                                                            break;
+                                                        case "E":
+                                                            rowBuffer["St_PosDir"] = "EAST";
+                                                            break;
+                                                        case "W":
+                                                            rowBuffer["St_PosDir"] = "WEST";
+                                                            break;
+                                                        default:
+                                                            rowBuffer["St_PosDir"] = "";
+                                                            break;
+                                                    }
+                                                }
                                             }
 
 
