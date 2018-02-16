@@ -75,7 +75,7 @@ namespace NextGen911DataLoader.commands
                                         phone = phone.Replace(")", "");
                                         phone = phone.Replace(" ", "");
                                         rowBuffer["ServiceURI"] = "tel:+" + phone;
-                                        rowBuffer["ServiceURN"] = "urn:service:sos";
+                                        rowBuffer["ServiceURN"] = "urn:nena:service:responder.fire";
                                         rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE"));
                                         //rowBuffer["AVcard_URI"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("SGID_FieldName"));
                                         rowBuffer["DsplayName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString().Trim();

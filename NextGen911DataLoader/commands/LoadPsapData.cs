@@ -78,7 +78,7 @@ namespace NextGen911DataLoader.commands
                                                 rowBuffer["ServiceURI"] = "tel:+" + phone;
                                             }
 
-                                            rowBuffer["ServiceURN"] = "urn:service:sos";
+                                            rowBuffer["ServiceURN"] = "urn:nena:service:sos:psap";
                                             rowBuffer["ServiceNum"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PHONE_NUMBER"));
                                             rowBuffer["AVcard_URI"] = "";
                                             rowBuffer["DsplayName"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PSAP_NAME"));
