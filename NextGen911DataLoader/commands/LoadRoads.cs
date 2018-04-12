@@ -89,8 +89,14 @@ namespace NextGen911DataLoader.commands
                                     rowBuffer["RCL_NGUID"] = "RCL" + rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
                                     rowBuffer["Parity_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_L"));
                                     rowBuffer["Parity_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_R"));
-                                    rowBuffer["ESN_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_L"));
-                                    rowBuffer["ESN_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_R"));
+                                    if (rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_L")) != "")
+                                    {
+                                        rowBuffer["ESN_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_L"));
+                                    }
+                                    if (rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_R")) != "")
+                                    {
+                                        rowBuffer["ESN_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_R"));
+                                    }
                                     rowBuffer["MSAGComm_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("MSAGCOMM_L"));
                                     rowBuffer["MSAGComm_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("MSAGCOMM_R"));
                                     rowBuffer["Country_L"] = "US";
