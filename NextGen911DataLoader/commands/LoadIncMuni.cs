@@ -29,9 +29,11 @@ namespace NextGen911DataLoader.commands
                             // Check if the user wants to truncate the layer first
                             if (truncate)
                             {
+                                Console.WriteLine("truncating Inc-muni feature class...");
                                 string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
                                 string pythonFile = "../../scripts_arcpy/TrancateTable.py";
                                 commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
+                                Console.WriteLine("...done truncating Inc-muni feature class.");
                             }
 
                             // get SGID Feature Classes.

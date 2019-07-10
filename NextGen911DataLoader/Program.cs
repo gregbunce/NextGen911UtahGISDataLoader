@@ -140,7 +140,7 @@ namespace NextGen911DataLoader
                         break;
                     case "INC":
                     case "INC-T":
-                        if (s.ToUpper() == s.ToUpper() + "INC-T")
+                        if (s.ToUpper() == "INC-T")
                         {
                             streamWriter.WriteLine(" *" + s);
                             etlInc = true;
