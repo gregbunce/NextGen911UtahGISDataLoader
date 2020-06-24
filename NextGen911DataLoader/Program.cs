@@ -349,7 +349,7 @@ namespace NextGen911DataLoader
             {
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing roads...");
-                string sgidRoads = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/sgid.agrc.utah.gov.sde/SGID10.Transportation.Roads";
+                string sgidRoads = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/internal.agrc.utah.gov.sde/SGID.Transportation.Roads";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads);
                 Console.WriteLine("   done importing roads");
@@ -363,7 +363,7 @@ namespace NextGen911DataLoader
             {
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing address points...");
-                string sgidAddressPnts = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/sgid.agrc.utah.gov.sde/SGID10.Location.AddressPoints";
+                string sgidAddressPnts = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/internal.agrc.utah.gov.sde/SGID.Location.AddressPoints";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts);
                 Console.WriteLine("   done importing address points");

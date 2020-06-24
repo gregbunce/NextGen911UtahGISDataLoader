@@ -33,7 +33,7 @@ namespace NextGen911DataLoader.commands
                             }
 
                             // get SGID Psap Feature Class.
-                            using (FeatureClass sgidPsap = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.PSAPBoundaries"))
+                            using (FeatureClass sgidPsap = sgid.OpenDataset<FeatureClass>("SGID.SOCIETY.PSAPBoundaries"))
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {

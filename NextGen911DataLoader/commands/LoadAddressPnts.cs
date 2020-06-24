@@ -43,7 +43,7 @@ namespace NextGen911DataLoader.commands
 
                     // get SGID Feature Classes - or the Scratch database Feature Class (uncomment the appropriate one)
                     //using (FeatureClass sourceAddrPnts = sgid.OpenDataset<FeatureClass>("SGID10.LOCATION.AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
-                    using (FeatureClass sourceAddrPnts = NG911Scratch.OpenDataset<FeatureClass>("AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
+                    using (FeatureClass sourceAddrPnts = NG911Scratch.OpenDataset<FeatureClass>("AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID.BOUNDARIES.ZipCodes"))
                     {
                         QueryFilter queryFilter1 = new QueryFilter
                         {

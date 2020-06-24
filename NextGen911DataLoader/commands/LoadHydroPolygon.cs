@@ -32,7 +32,7 @@ namespace NextGen911DataLoader.commands
                         }
 
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.WATER.LakesNHDHighRes"))
+                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID.WATER.LakesNHDHighRes"))
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {

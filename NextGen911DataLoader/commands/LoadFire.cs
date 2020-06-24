@@ -32,7 +32,7 @@ namespace NextGen911DataLoader.commands
                         }
 
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.HEALTH.EMSServiceAreas"))
+                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID.HEALTH.EMSServiceAreas"))
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {

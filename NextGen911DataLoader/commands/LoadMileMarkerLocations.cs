@@ -34,7 +34,7 @@ namespace NextGen911DataLoader.commands
                             }
 
                             // get SGID Feature Classes.
-                            using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.TRANSPORTATION.UDOTTenthMileRefPoints"))
+                            using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID.TRANSPORTATION.UDOTTenthMileRefPoints"))
                             {
                                 QueryFilter queryFilter1 = new QueryFilter
                                 {

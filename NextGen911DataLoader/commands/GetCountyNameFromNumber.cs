@@ -152,7 +152,7 @@ namespace NextGen911DataLoader.commands
                     using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                     {
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.Counties"))
+                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID.BOUNDARIES.Counties"))
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {

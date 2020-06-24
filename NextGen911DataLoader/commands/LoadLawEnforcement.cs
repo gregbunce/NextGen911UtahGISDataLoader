@@ -34,7 +34,7 @@ namespace NextGen911DataLoader.commands
 
 
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID10.SOCIETY.LawEnforcementBoundaries"))
+                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID.SOCIETY.LawEnforcementBoundaries"))
                         {
                             QueryFilter queryFilter1 = new QueryFilter
                             {
