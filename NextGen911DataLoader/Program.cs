@@ -1,21 +1,29 @@
-﻿using System;
+﻿//using System;
+//using ArcGIS.Core.Data;
+//using System.IO;
+using ArcGIS.Core.Hosting;
+using ArcGIS.Core.Internal.CIM;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using ArcGIS.Core;
-using ArcGIS.Core.Data;
-using System.IO;
 
 namespace NextGen911DataLoader
 {
 
     class Program
     {
+        //[STAThread] must be present on the Application entry point
         [STAThread]
 
         static void Main(string[] args)
         {
+            //Call Host.Initialize before constructing any objects from ArcGIS.Core
+            Host.Initialize();
 
             bool etlRoads = false;
             bool truncateRoads = false;
@@ -315,17 +323,17 @@ namespace NextGen911DataLoader
             streamWriter.WriteLine("FeatureType" + "," + "SGID_OID" + "," + "NextGen_OID" + "," + "Notes");
 
 
-            // Host.Initialize before constructing any objects from ArcGIS.Core
-            try
-            {
-                ArcGIS.Core.Hosting.Host.Initialize();
-            }
-            catch (Exception e)
-            {
-                // Error (missing installation, no license, 64 bit mismatch, etc.)
-                Console.WriteLine(string.Format("Initialization failed: {0}", e.Message));
-                return;
-            }
+            //// Host.Initialize before constructing any objects from ArcGIS.Core
+            //try
+            //{
+            //    ArcGIS.Core.Hosting.Host.Initialize();
+            //}
+            //catch (Exception e)
+            //{
+            //    // Error (missing installation, no license, 64 bit mismatch, etc.)
+            //    Console.WriteLine(string.Format("Initialization failed: {0}", e.Message));
+            //    return;
+            //}
 
             string fgdbPath = args[0];
 
@@ -333,7 +341,7 @@ namespace NextGen911DataLoader
             //Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(args[0])));
 
             // Connect to SDID Database //
-            DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute(args[1], args[2], args[3]);
+            ArcGIS.Core.Data.DatabaseConnectionProperties sgidConnectionProperties = commands.ConnectToSGID.Execute(args[1], args[2], args[3]);
 
             // Populate the CountyNumber/CountyName Dictionary lookup... for use later thoughout the project.
             commands.GetCountyNameFromNumber.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
@@ -349,7 +357,7 @@ namespace NextGen911DataLoader
             {
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing roads...");
-                string sgidRoads = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/internal.agrc.utah.gov.sde/SGID.Transportation.Roads";
+                string sgidRoads = "C:/Users/gbunce/AppData/Roaming/ESRI/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Transportation.Roads";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads);
                 Console.WriteLine("   done importing roads");
@@ -363,7 +371,7 @@ namespace NextGen911DataLoader
             {
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing address points...");
-                string sgidAddressPnts = "C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/internal.agrc.utah.gov.sde/SGID.Location.AddressPoints";
+                string sgidAddressPnts = "C:/Users/gbunce/AppData/Roaming/Esri/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Location.AddressPoints";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts);
                 Console.WriteLine("   done importing address points");

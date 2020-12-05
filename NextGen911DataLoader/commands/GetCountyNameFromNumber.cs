@@ -6,6 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using ArcGIS.Core.Hosting;
+using ArcGIS.Core.Internal.CIM;
+using Microsoft.Win32;
+
+
 // Concider making this a dictionary based on a sql query to the sgid10.boundaries.counties table to load the number and name into the dict -- instead of hardcoding it like below.
 // This would allow for the number/names to change and the dict would be dynamic. 
 namespace NextGen911DataLoader.commands
@@ -134,6 +139,8 @@ namespace NextGen911DataLoader.commands
 
         ///
         /// 
+
+
         //Dictionary<string, string> dict = new models.CountyValues<string>();
         public static Dictionary<string, string> dict; // = new Dictionary<string, string>();
 
@@ -146,21 +153,21 @@ namespace NextGen911DataLoader.commands
                 
 
                 // connect to sgid.
-                using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
+                using (ArcGIS.Core.Data.Geodatabase sgid = new ArcGIS.Core.Data.Geodatabase(sgidConnectionProperties))
                 {
                     // connect to ng911 fgdb.
-                    using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
+                    using (ArcGIS.Core.Data.Geodatabase NG911Utah = new ArcGIS.Core.Data.Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))))
                     {
                         // get SGID Feature Classes.
-                        using (FeatureClass sgid_FeatClass = sgid.OpenDataset<FeatureClass>("SGID.BOUNDARIES.Counties"))
+                        using (ArcGIS.Core.Data.FeatureClass sgid_FeatClass = sgid.OpenDataset<ArcGIS.Core.Data.FeatureClass>("SGID.BOUNDARIES.Counties"))
                         {
-                            QueryFilter queryFilter1 = new QueryFilter
+                            ArcGIS.Core.Data.QueryFilter queryFilter1 = new ArcGIS.Core.Data.QueryFilter
                             {
                                 //WhereClause = "AddSystem = 'SALT LAKE CITY' and StreetName = 'ELIZABETH'"
                             };
 
                             // Get a Cursor of SGID features.
-                            using (RowCursor SgidCursor = sgid_FeatClass.Search(queryFilter1, true))
+                            using (ArcGIS.Core.Data.RowCursor SgidCursor = sgid_FeatClass.Search(queryFilter1, true))
                             {
                                 // Loop through the sgid features.
                                 while (SgidCursor.MoveNext())
