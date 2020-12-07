@@ -1,5 +1,5 @@
 ﻿using ArcGIS.Core.Data;
-using ArcGIS.Desktop.Core.Geoprocessing;
+//using ArcGIS.Desktop.Core.Geoprocessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,7 +29,7 @@ namespace NextGen911DataLoader.commands
                         {
                             string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
                             string pythonFile = "../../scripts_arcpy/TrancateTable.py";
-                            commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
+                            ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
                         }
 
 

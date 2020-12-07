@@ -19,10 +19,10 @@ namespace NextGen911DataLoader.commands
             try
             {
                 // Create connection path to the scratch database.
-                string scratchFgdbPath = "C:\\temp\\ng911scratch.gdb";
+                string scratchFgdbPath = "C:\\Temp\\ng911scratch.gdb";
 
                 // connect to sgid, ng911, open feature classes and table
-                using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties))
+                //using (Geodatabase sgid = new Geodatabase(sgidConnectionProperties)) // we don't really need this connection as we're now pulling the roads from the scratch fgdb 
                 using (Geodatabase NG911Utah = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fgdbPath))), NG911Scratch = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(scratchFgdbPath))))
                 using (FeatureClass ng911_FeatClass = NG911Utah.OpenDataset<FeatureClass>("AddressPoints"))
                 using (Table ng911_CompleteLandmarkTable = NG911Utah.OpenDataset<Table>("LandmarkNameCompleteAliasTable"), ng911_PartLandmarkTable = NG911Utah.OpenDataset<Table>("LandmarkNamePartTable"))
@@ -43,7 +43,8 @@ namespace NextGen911DataLoader.commands
 
                     // get SGID Feature Classes - or the Scratch database Feature Class (uncomment the appropriate one)
                     //using (FeatureClass sourceAddrPnts = sgid.OpenDataset<FeatureClass>("SGID10.LOCATION.AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID10.BOUNDARIES.ZipCodes"))
-                    using (FeatureClass sourceAddrPnts = NG911Scratch.OpenDataset<FeatureClass>("AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID.BOUNDARIES.ZipCodes"))
+                    //using (FeatureClass sourceAddrPnts = NG911Scratch.OpenDataset<FeatureClass>("AddressPoints"), sgidZipCodes = sgid.OpenDataset<FeatureClass>("SGID.BOUNDARIES.ZipCodes")) // not using zipcodes right now
+                    using (FeatureClass sourceAddrPnts = NG911Scratch.OpenDataset<FeatureClass>("AddressPoints"))
                     {
                         QueryFilter queryFilter1 = new QueryFilter
                         {

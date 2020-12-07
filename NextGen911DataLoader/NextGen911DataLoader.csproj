@@ -50,21 +50,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ArcGIS.Core">
-      <HintPath>..\..\..\..\..\..\..\Program Files\ArcGIS\Pro\bin\ArcGIS.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="ArcGIS.Core, Version=12.6.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Local\Programs\ArcGIS\Pro\bin\ArcGIS.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="ArcGIS.CoreHost">
-      <HintPath>..\..\..\..\..\..\..\Program Files\ArcGIS\Pro\bin\ArcGIS.CoreHost.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="ArcGIS.CoreHost, Version=12.6.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Local\Programs\ArcGIS\Pro\bin\ArcGIS.CoreHost.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="ArcGIS.Desktop.Core">
-      <HintPath>..\..\..\..\..\..\..\Program Files\ArcGIS\Pro\bin\Extensions\Core\ArcGIS.Desktop.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Framework">
-      <HintPath>..\..\..\..\..\..\..\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Framework.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="ArcGIS.Desktop.Framework, Version=12.6.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Local\Programs\ArcGIS\Pro\bin\ArcGIS.Desktop.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
