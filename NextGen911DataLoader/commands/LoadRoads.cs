@@ -51,7 +51,7 @@ namespace NextGen911DataLoader.commands
                         QueryFilter queryFilter1 = new QueryFilter
                         {
                             // CARTOCODE 15 is proposed roads
-                            //WhereClause = "ADDRSYS_L = 'ROCKVILLE' and CARTOCODE <> '15'"
+                            //WhereClause = "ADDRSYS_L = 'Springville'"
                         };
 
                         // Get a Cursor of SGID features.
@@ -85,8 +85,8 @@ namespace NextGen911DataLoader.commands
                                     rowBuffer["ToAddr_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("TOADDR_R"));
                                     rowBuffer["Effective"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("EFFECTIVE"));
                                     rowBuffer["Expire"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("EXPIRE"));
-                                    //rowBuffer["RCL_NGUID"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("UNIQUE_ID"));
-                                    rowBuffer["RCL_NGUID"] = "RCL" + rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
+                                    rowBuffer["RCL_NGUID"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("GlobalID"));
+                                    //rowBuffer["RCL_NGUID"] = "RCL" + rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
                                     rowBuffer["Parity_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_L"));
                                     rowBuffer["Parity_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_R"));
                                     if (rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_L")) != "")
@@ -97,12 +97,12 @@ namespace NextGen911DataLoader.commands
                                     {
                                         rowBuffer["ESN_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("ESN_R"));
                                     }
-                                    rowBuffer["MSAGComm_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("MSAGCOMM_L"));
-                                    rowBuffer["MSAGComm_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("MSAGCOMM_R"));
+                                    rowBuffer["MSAGComm_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTCOMM_L"));
+                                    rowBuffer["MSAGComm_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTCOMM_R"));
                                     rowBuffer["Country_L"] = "US";
                                     rowBuffer["Country_R"] = "US";
-                                    rowBuffer["State_L"] = "UT";
-                                    rowBuffer["State_R"] = "UT";
+                                    rowBuffer["State_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("STATE_L"));
+                                    rowBuffer["State_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("STATE_R"));
                                     rowBuffer["IncMuni_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("INCMUNI_L"));
                                     rowBuffer["IncMuni_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("INCMUNI_R"));
                                     rowBuffer["UnincCom_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("UNINCCOM_L"));
@@ -114,6 +114,11 @@ namespace NextGen911DataLoader.commands
                                     rowBuffer["PostComm_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTCOMM_L"));
                                     rowBuffer["PostComm_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTCOMM_R"));
                                     rowBuffer["SpeedLimit"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("SPEED_LMT"));
+                                    // Legacy fields
+                                    rowBuffer["LSt_PreDir"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PREDIR"));
+                                    rowBuffer["LSt_Name"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("NAME"));
+                                    rowBuffer["LSt_Type"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTTYPE"));
+                                    rowBuffer["LStPosDir"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("POSTDIR"));
 
                                     // Derive RoadClass from COFIPS.
                                     Int32 cofips = Convert.ToInt32(rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("CARTOCODE")));
@@ -203,6 +208,7 @@ namespace NextGen911DataLoader.commands
                                     string codedDomainValue = GetDomainValue.Execute(featureClassDefinitionSourceRoads, rouceRoadsCursor, "POSTTYPE", "POSTTYPE");
                                     codedDomainValue.Trim();
                                     if (codedDomainValue != "")
+
                                     {
                                         // Proper case.
                                         //codedDomainValue = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(codedDomainValue.ToLower());
