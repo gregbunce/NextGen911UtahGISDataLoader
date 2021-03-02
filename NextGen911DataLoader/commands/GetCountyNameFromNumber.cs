@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using ArcGIS.Core.Hosting;
 using ArcGIS.Core.Internal.CIM;
 using Microsoft.Win32;

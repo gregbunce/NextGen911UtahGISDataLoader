@@ -346,6 +346,9 @@ namespace NextGen911DataLoader
             // Populate the CountyNumber/CountyName Dictionary lookup... for use later thoughout the project.
             commands.GetCountyNameFromNumber.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
 
+            // Populate the zipcode/postalcommname Dictionary lookup... for use later thoughout the project.
+            commands.GetPostalCommFromNumber.Execute(sgidConnectionProperties, fgdbPath, streamWriter);
+
             // ETL Psap Data to NG911
             if (etlPsaps)
             {

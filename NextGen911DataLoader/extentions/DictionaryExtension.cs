@@ -15,6 +15,15 @@ namespace NextGen911DataLoader.extentions
             return dict[countyNumber].ToString();
         }
 
+        // postal community name
+        public static string GetPostalCommExt(this Dictionary<string, string> dict, string zipcode_num)
+        {
+
+
+            return dict[zipcode_num].ToString();
+        }
+
+
 
     }
 }

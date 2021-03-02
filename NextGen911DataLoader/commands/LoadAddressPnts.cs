@@ -116,13 +116,11 @@ namespace NextGen911DataLoader.commands
                                             //rowBuffer["St_PreSep"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["StreetName"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("StreetName"));
                                             //rowBuffer["St_PosMod"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            //rowBuffer["LSt_PreDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            //rowBuffer["LSt_Name"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            //rowBuffer["LSt_Type"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            //rowBuffer["LStPosDir"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
+                                            rowBuffer["LSt_PreDir"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PrefixDir"));
+                                            rowBuffer["LSt_Name"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("StreetName"));
+                                            rowBuffer["LSt_Type"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("StreetType"));
+                                            rowBuffer["LStPosDir"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("SuffixDir"));
                                             rowBuffer["ESN"] = "0";
-                                            //rowBuffer["MSAGComm"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            //rowBuffer["Post_Comm"] = "";
                                             rowBuffer["Post_Code"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode"));            
                                             //rowBuffer["Post_Code4"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             rowBuffer["Building"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("Building"));
@@ -141,6 +139,9 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["Lat"] = mapPointReprojected.Y;
                                             //rowBuffer["Elev"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
 
+                                            string postal_comm = GetPostalCommFromNumber.postal_dict.GetPostalCommExt(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode")).ToString());
+                                            rowBuffer["Post_Comm"] = postal_comm;
+                                            rowBuffer["MSAGComm"] = postal_comm;
 
                                             // Derive Place_Type from PtType.
                                             if (!(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtType")) == null))

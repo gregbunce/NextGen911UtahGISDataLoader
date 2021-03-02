@@ -78,6 +78,7 @@
     <Compile Include="commands\AddRowToStreetNameAliasTable.cs" />
     <Compile Include="commands\ConnectToSGID.cs" />
     <Compile Include="commands\ETL_CodeStub.cs" />
+    <Compile Include="commands\GetPostalCommFromNumber.cs" />
     <Compile Include="commands\GetCountyNameFromNumber.cs" />
     <Compile Include="commands\GetDomainValue.cs" />
     <Compile Include="commands\GetRightLeftOffsetPointsFromPolyline.cs" />
