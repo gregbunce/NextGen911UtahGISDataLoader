@@ -85,7 +85,7 @@ namespace NextGen911DataLoader.commands
                                     rowBuffer["ToAddr_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("TOADDR_R"));
                                     rowBuffer["Effective"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("EFFECTIVE"));
                                     rowBuffer["Expire"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("EXPIRE"));
-                                    rowBuffer["RCL_NGUID"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("GlobalID"));
+                                    rowBuffer["RCL_NGUID"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("UNIQUE_ID")) + "|" + rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("OBJECTID"));
                                     //rowBuffer["RCL_NGUID"] = "RCL" + rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("OBJECTID")) + "@gis.utah.gov";
                                     rowBuffer["Parity_L"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_L"));
                                     rowBuffer["Parity_R"] = rouceRoadsCursor.Current.GetOriginalValue(rouceRoadsCursor.Current.FindField("PARITY_R"));

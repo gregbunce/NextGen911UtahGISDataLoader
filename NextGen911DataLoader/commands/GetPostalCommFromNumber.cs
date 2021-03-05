@@ -59,9 +59,14 @@ namespace NextGen911DataLoader.commands
 
         public static string GetPostalComm(string postal_number)
         {
-            string postal_comm = postal_dict[postal_number].ToString();
+            if (postal_dict.ContainsKey(postal_number))
+                return postal_dict[postal_number].ToString();
+                //return postal_comm;
+            else
+                return "";
 
-            return postal_comm;
+            //string postal_comm = postal_dict[postal_number].ToString();
+            //return postal_comm;
         }
 
     }
