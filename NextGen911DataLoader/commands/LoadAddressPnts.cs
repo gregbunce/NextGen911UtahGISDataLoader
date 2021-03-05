@@ -139,9 +139,13 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["Lat"] = mapPointReprojected.Y;
                                             //rowBuffer["Elev"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
 
-                                            string postal_comm = GetPostalCommFromNumber.postal_dict.GetPostalCommExt(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode")).ToString());
-                                            rowBuffer["Post_Comm"] = postal_comm;
-                                            rowBuffer["MSAGComm"] = postal_comm;
+                                            // use zipcode number to get postal comm name and then populate postal_comm and msagcomm.  first, check for null values in the addrpnts zipcode field
+                                            if (!(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode")) == null))
+                                            {
+                                                string postal_comm = GetPostalCommFromNumber.postal_dict.GetPostalCommExt(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("ZipCode")).ToString());
+                                                rowBuffer["Post_Comm"] = postal_comm;
+                                                rowBuffer["MSAGComm"] = postal_comm;
+                                            }
 
                                             // Derive Place_Type from PtType.
                                             if (!(sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("PtType")) == null))
