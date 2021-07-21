@@ -49,5 +49,25 @@ namespace NextGen911DataLoader.commands
             }
         }
 
+        // overload the method to allow four arguments (two of which will be passed into the python script as argv params (arg1, arg2, and arg3)).
+        public static void run_arcpy(string pythonFile, string arg1, string arg2, string arg3)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            //start.FileName = @"C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe";
+            start.FileName = @"C:\Users\gbunce\AppData\Local\Programs\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe";
+            start.Arguments = string.Format("{0} {1} {2} {3}", pythonFile, arg1, arg2, arg3);
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            using (Process process = Process.Start(start))
+            {
+                using (StreamReader reader = process.StandardOutput)
+                {
+                    string result = reader.ReadToEnd();
+                    Console.Write(result);
+                }
+            }
+        }
+
+
     }
 }

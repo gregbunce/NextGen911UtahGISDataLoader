@@ -8,6 +8,7 @@ import sys
 in_features = sys.argv[1]
 out_location = 'C:/temp/ng911scratch.gdb'
 out_fc_name = sys.argv[2]
+where_clause = sys.argv[3]
 
 # Execute FeatureClassToGeodatabase
-arcpy.FeatureClassToFeatureClass_conversion(in_features, out_location, out_fc_name)
+arcpy.FeatureClassToFeatureClass_conversion(in_features, out_location, out_fc_name, where_clause)
