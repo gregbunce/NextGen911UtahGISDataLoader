@@ -2,6 +2,8 @@
 import sys
 
 # arcpy.env.workspace = 'C:/Users/gbunce.UTAH/AppData/Roaming/Esri/ArcGISPro/Favorites/sgid.agrc.utah.gov.sde'
+# Set the preserveGlobalIds environment to True
+arcpy.env.preserveGlobalIds = True
 
 # Set local variables
 # in_features = ['climate.shp', 'majorrds.shp']
