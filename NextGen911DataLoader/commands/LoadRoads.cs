@@ -249,8 +249,19 @@ namespace NextGen911DataLoader.commands
                                         {
                                             // The County value contains the cofips, so parse the stirng to obtain the name only.
                                             string[] parsedDomain = codedDomainValue.Split(' ');
-                                            countyName = parsedDomain[2];
-                                            countyName = countyName.Trim() + " County";
+
+                                            // Check if county has two works (ie: 49003 - Box Elder == 4) these numbers are not zero based
+                                            if (parsedDomain.Length == 4)
+                                            {
+                                                countyName = parsedDomain[2] + " " + parsedDomain[3]; // these numbers are zero based
+                                                countyName = countyName.Trim() + " County";
+                                            }
+                                            if (parsedDomain.Length == 3) // one word county name (ie: Cache)
+                                            {
+                                                countyName = parsedDomain[2];
+                                                countyName = countyName.Trim() + " County";
+                                            }
+
                                         }
                                         rowBuffer["County_L"] = countyName.ToUpper();
                                     }
@@ -267,8 +278,18 @@ namespace NextGen911DataLoader.commands
                                         {
                                             // The County value contains the cofips, so parse the stirng to obtain the name only.
                                             string[] parsedDomain = codedDomainValue.Split(' ');
-                                            countyName = parsedDomain[2];
-                                            countyName = countyName.Trim() + " County";
+
+                                            // Check if county has two works (ie: 49003 - Box Elder == 4) these numbers are not zero based
+                                            if (parsedDomain.Length == 4)
+                                            {
+                                                countyName = parsedDomain[2] + " " + parsedDomain[3]; // these numbers are zero based
+                                                countyName = countyName.Trim() + " County";
+                                            }
+                                            if (parsedDomain.Length == 3) // one word county name (ie: Cache)
+                                            {
+                                                countyName = parsedDomain[2];
+                                                countyName = countyName.Trim() + " County";
+                                            }
                                         }
                                         rowBuffer["County_R"] = countyName.ToUpper();
                                     }
