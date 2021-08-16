@@ -270,8 +270,8 @@ namespace NextGen911DataLoader.commands
                                                 if (codedDomainValue.Any(char.IsDigit))
                                                 {
                                                     // The County value contains the cofips, so parse the stirng to obtain the name only.
-                                                    string[] parsedDomain = codedDomainValue.Split(' ');
-                                                    countyName = parsedDomain[2];
+                                                    string[] parsedDomain = codedDomainValue.Split('-');
+                                                    countyName = parsedDomain[1];
                                                     countyName = countyName.Trim() + " County";
                                                 }
                                                 rowBuffer["County"] = countyName.ToUpper();
