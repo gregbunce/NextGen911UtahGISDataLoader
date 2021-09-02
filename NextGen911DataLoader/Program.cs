@@ -361,9 +361,9 @@ namespace NextGen911DataLoader
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing roads...");
                 //string sgidRoads = "C:/Users/gbunce/AppData/Roaming/ESRI/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Transportation.Roads";
-                string sgidRoads = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2021_8_5.gdb/Roads";
+                string sgidRoads = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2021_9_2.gdb/Roads";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
-                string where_clause = @"""(FROMADDR_L > 0 and TOADDR_L > 0 and FROMADDR_R > 0 and TOADDR_R > 0) and STATUS not in ( 'Construction', 'Planned' ) and NAME <> ''""";
+                string where_clause = @"""(FROMADDR_L > 0 and TOADDR_L > 0 and FROMADDR_R > 0 and TOADDR_R > 0) and STATUS not in ( 'Construction', 'Planned' ) and NAME <> '' and (STATE_L = 'UT' and STATE_R = 'UT')"""; 
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads, "Roads", where_clause);
                 Console.WriteLine("Done importing roads");
 
@@ -377,7 +377,7 @@ namespace NextGen911DataLoader
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing address points...");
                 //string sgidAddressPnts = "C:/Users/gbunce/AppData/Roaming/Esri/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Location.AddressPoints";
-                string sgidAddressPnts = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2021_8_5.gdb/AddressPoints";
+                string sgidAddressPnts = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2021_9_2.gdb/AddressPoints";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
                 string where_clause = @"""""";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts, "AddressPoints", where_clause);
