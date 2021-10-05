@@ -40,10 +40,18 @@ namespace NextGen911DataLoader.commands
                             // Loop through the sgid features.
                             while (SgidCursor.MoveNext())
                             {
+                                string zip5 = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIP5")).ToString();
                                 // Values to dictionary.
-
-                                postal_dict.Add(SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("ZIP5")).ToString(), SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString());
-
+                                // check if value exists, first (we have a few zipcodes are contains more than one polygons) and if so, skip (aka: take the first entry that's already been added)
+                                bool keyExists = postal_dict.ContainsKey(zip5);
+                                if (keyExists)
+                                {
+                                    // do nothing
+                                }
+                                else
+                                {
+                                    postal_dict.Add(zip5, SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString());
+                                }
                             }
                         }
                     }

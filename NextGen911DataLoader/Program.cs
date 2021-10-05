@@ -377,9 +377,9 @@ namespace NextGen911DataLoader
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing address points...");
                 //string sgidAddressPnts = "C:/Users/gbunce/AppData/Roaming/Esri/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Location.AddressPoints";
-                string sgidAddressPnts = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2021_9_2.gdb/AddressPoints";
+                string sgidAddressPnts = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2021_10_4.gdb/AddressPoints";
                 string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
-                string where_clause = @"""""";
+                string where_clause = @"""State = 'UT'""";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts, "AddressPoints", where_clause);
                 Console.WriteLine("Done importing address points");
 
