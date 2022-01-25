@@ -8,7 +8,7 @@ import arcpy, os
 
 #: Set path to ng911 database.
 #ng911_db = r"\\itwfpcap2\AGRC\agrc\data\ng911\SpatialStation_live_data\UtahNG911GIS.gdb"
-ng911_db = r"C:\Temp\NG911GIS_Schema_paritytesting.gdb"
+ng911_db = r"C:\Temp\NG911GIS_Schema.gdb"
 rcls = os.path.join(ng911_db, r'RoadCenterlines')
 
 arcpy.env.workspace = ng911_db
@@ -46,10 +46,17 @@ with arcpy.da.UpdateCursor(rcls, fields) as update_cursor:
 
         #: assign parity_l when missing value
         if parL not in ('B', 'E', 'O', 'Z'):
-            if (not fromL_odd and toL_odd) or (fromL_odd and not toL_index):
+            #: check for zeros.
+            if fromL == 0 and toL == 0:
+                parity_l_new_value = 'Z'
+            #: check if parity is BOTH
+            elif (not fromL_odd and toL_odd) or (fromL_odd and not toL_index):
                 parity_l_new_value = "B"
+            #: check if parity is ODD
             elif fromL_odd and toL_odd:
+
                     parity_l_new_value = "O"
+            #: check if parity is EVEN
             else:
                 parity_l_new_value = "E"
         else:
@@ -58,10 +65,16 @@ with arcpy.da.UpdateCursor(rcls, fields) as update_cursor:
 
         #: assign parity_r when missing value
         if parR not in ('B', 'E', 'O', 'Z'):
-            if (not fromR_odd and toR_odd) or (fromR_odd and not toR_index):
+            #: check for zeros.
+            if fromR == 0 and toR == 0:
+                parity_r_new_value = 'Z'
+            #: check if parity is BOTH
+            elif (not fromR_odd and toR_odd) or (fromR_odd and not toR_index):
                 parity_r_new_value = "B"
+            #: check if parity is ODD
             elif fromR_odd and toR_odd:
                     parity_r_new_value = "O"
+            #: check if parity is EVEN
             else:
                 parity_r_new_value = "E"
         else:
