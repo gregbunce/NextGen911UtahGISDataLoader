@@ -1,6 +1,10 @@
 import arcpy, os
 
-#: Parity Domain values:
+#: Notes before running
+#: 1. use python 3
+#: 2. make sure the following variables are pointed to the correct db and fc: ng911_db, rcls
+
+#: Parity Domain values (for reference):
 #: O = ODD
 #: E = EVEN
 #: B = BOTH
