@@ -15,17 +15,20 @@ arcpy.env.workspace = ng911_db
 arcpy.env.overwriteOutput = True
 arcpy.env.qualifiedFieldNames = False
 
-fields = ['Parity_L', 'Parity_R','FromAddr_L', 'ToAddr_L', 'FromAddr_R', 'ToAddr_R']
+fields = ['OID@', 'Parity_L', 'Parity_R','FromAddr_L', 'ToAddr_L', 'FromAddr_R', 'ToAddr_R']
+oid_index = fields.index('OID@')
 parL_index = fields.index('Parity_L')
 parR_index = fields.index('Parity_R')
 fromL_index = fields.index('FromAddr_L')
 toL_index = fields.index('ToAddr_L')
 fromR_index = fields.index('FromAddr_R')
 toR_index = fields.index('ToAddr_R')
+itter = 0
 
 print("Looping through rows in FC ...")
 with arcpy.da.UpdateCursor(rcls, fields) as update_cursor:
     for row in update_cursor:
+        oid = row[oid_index]
         parity_l_new_value = ""
         parity_r_new_value = ""
         fromL = row[fromL_index]
@@ -41,8 +44,6 @@ with arcpy.da.UpdateCursor(rcls, fields) as update_cursor:
         fromR_odd = True if fromR % 2 else False
         toR_odd = True if toR % 2 else False
 
-        print("itterating...")
-
         #: assign parity_l when missing value
         if parL not in ('B', 'E', 'O', 'Z'):
             if (not fromL_odd and toL_odd) or (fromL_odd and not toL_index):
@@ -51,18 +52,27 @@ with arcpy.da.UpdateCursor(rcls, fields) as update_cursor:
                     parity_l_new_value = "O"
             else:
                 parity_l_new_value = "E"
+        else:
+            parity_l_new_value = parL
+            print("OID " + str(oid) + " contained an existing valid parity_l value and was skipped.")
 
         #: assign parity_r when missing value
-        if fromR_odd not in ('B', 'E', 'O', 'Z'):
+        if parR not in ('B', 'E', 'O', 'Z'):
             if (not fromR_odd and toR_odd) or (fromR_odd and not toR_index):
                 parity_r_new_value = "B"
             elif fromR_odd and toR_odd:
                     parity_r_new_value = "O"
             else:
                 parity_r_new_value = "E"
+        else:
+            parity_r_new_value = parR
+            print("OID " + str(oid) + " contained an existing valid parity_r value and was skipped.")
 
-            row[parL_index] = parity_l_new_value
-            row[parR_index] = parity_r_new_value
-            update_cursor.updateRow(row)
+        itter = itter + 1
+        if str(itter).endswith('0000'):
+            print("processing the " + str(itter) + "s table block...")
+        row[parL_index] = parity_l_new_value
+        row[parR_index] = parity_r_new_value
+        update_cursor.updateRow(row)
 
 print("done!")
