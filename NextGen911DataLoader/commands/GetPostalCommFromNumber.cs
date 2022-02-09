@@ -53,6 +53,8 @@ namespace NextGen911DataLoader.commands
                                     postal_dict.Add(zip5, SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("NAME")).ToString());
                                 }
                             }
+                            // Add dict row for 84114 zipcode, which is not in sgid zipcode feature class b/c it is a salt lake county government zipcode.  give this zip the name of "SALT LAKE CITY"
+                            postal_dict.Add("84114", "SALT LAKE CITY");
                         }
                     }
                 }
