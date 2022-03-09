@@ -2,7 +2,7 @@ import arcpy, os
 
 #: Notes before running
 #: 1. use python 3
-#: 2. make sure the following variables are pointed to the correct db and fc: ng911_db, rcls
+#: 2. make sure the following variables are pointed to the correct db and fc: ng911_db, rcls (both variables should be fine as is)
 
 #: Parity Domain values (for reference):
 #: O = ODD

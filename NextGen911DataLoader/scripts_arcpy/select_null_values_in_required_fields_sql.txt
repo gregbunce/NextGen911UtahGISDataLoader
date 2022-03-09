@@ -1,0 +1,7 @@
+( MSAGComm_L is null or MSAGComm_R is null) or ( MSAGComm_L = '' or MSAGComm_R = '') 
+or 
+( County_L is null or County_R is null) or ( County_L = '' or County_R = '') 
+or 
+( PostCode_L is null or PostCode_R is null) or ( PostCode_L = '' or PostCode_R = '') 
+or
+( PostComm_L is null or PostComm_R is null) or ( PostComm_L = '' or PostComm_R = '')
