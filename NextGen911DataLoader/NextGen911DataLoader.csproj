@@ -7,6 +7,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <NoWarn>CA1416</NoWarn>
+    <OutputType>Exe</OutputType>
+    <StartupObject>NextGen911DataLoader.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="scripts_arcpy\CreateFileGeodatabase.py" />

@@ -27,7 +27,7 @@ namespace NextGen911DataLoader.commands
                         if (truncate)
                         {
                             string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
-                            string pythonFile = "../../scripts_arcpy/TrancateTable.py";
+                            string pythonFile = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\TrancateTable.py";
                             commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
                         }
 

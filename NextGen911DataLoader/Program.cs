@@ -71,7 +71,7 @@ namespace NextGen911DataLoader
                 // Rename the existing fgdb.
                 string renameDate = DateTime.Now.ToString("yyyyMMddHHmm");
 
-                string pythonFileRename = "../../scripts_arcpy/RenameFGDB.py";
+                string pythonFileRename = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\RenameFGDB.py";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileRename, renameDate);
 
             }
@@ -82,7 +82,7 @@ namespace NextGen911DataLoader
 
             // Create a new (scratch) file geodatabase via arcpy script.
             Console.WriteLine("Creating scratch fgdb database for sgid layers....");
-            string pythonFileCreateFGDB = "../../scripts_arcpy/CreateFileGeodatabase.py";
+            string pythonFileCreateFGDB = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\CreateFileGeodatabase.py";
             string dateNow = DateTime.Now.ToString("yyyyMMdd_HHmm");
             commands.ExecuteArcpyScript.run_arcpy(pythonFileCreateFGDB, @"C:/temp", "ng911scratch");
             Console.WriteLine("Done creating scratch fgdb database.");
@@ -362,7 +362,7 @@ namespace NextGen911DataLoader
                 Console.WriteLine("importing roads...");
                 //string sgidRoads = "C:/Users/gbunce/AppData/Roaming/ESRI/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Transportation.Roads";
                 string sgidRoads = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2022_2_9.gdb/Roads";
-                string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
+                string pythonFileExportData = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\ExportFeatClassToScratchFGDB.py";
                 string where_clause = @"""(FROMADDR_L > 0 and TOADDR_L > 0 and FROMADDR_R > 0 and TOADDR_R > 0) and STATUS not in ( 'Construction', 'Planned' ) and NAME <> '' and (STATE_L = 'UT' and STATE_R = 'UT')"""; 
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads, "Roads", where_clause);
                 Console.WriteLine("Done importing roads");
@@ -378,7 +378,7 @@ namespace NextGen911DataLoader
                 Console.WriteLine("importing address points...");
                 //string sgidAddressPnts = "C:/Users/gbunce/AppData/Roaming/Esri/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Location.AddressPoints";
                 string sgidAddressPnts = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2022_2_9.gdb/AddressPoints";
-                string pythonFileExportData = "../../scripts_arcpy/ExportFeatClassToScratchFGDB.py";
+                string pythonFileExportData = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\ExportFeatClassToScratchFGDB.py";
                 string where_clause = @"""State = 'UT'""";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts, "AddressPoints", where_clause);
                 Console.WriteLine("Done importing address points");

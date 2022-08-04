@@ -1,14 +1,11 @@
 ﻿using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using NextGen911DataLoader.extentions;
+using ArcGIS.Core.Data.Exceptions;
 
 namespace NextGen911DataLoader.commands
 {
@@ -36,7 +33,7 @@ namespace NextGen911DataLoader.commands
                     {
                         Console.WriteLine("truncating address points feature class....");
                         string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
-                        string pythonFile = "../../scripts_arcpy/TrancateTable.py";
+                        string pythonFile = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\TrancateTable.py";
                         commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
                         Console.WriteLine("   done truncating address points feature class");
                     }

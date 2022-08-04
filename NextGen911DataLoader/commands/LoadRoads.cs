@@ -38,7 +38,7 @@ namespace NextGen911DataLoader.commands
                         Console.WriteLine("truncating roads feature class and roads alias table....");
                         string featClassLocation = fgdbPath + "\\" + ng911_FeatClass.GetName().ToString();
                         string tableLocation = fgdbPath + "\\" + ng911StreetNameAliasTable.GetName().ToString();
-                        string pythonFile = "../../scripts_arcpy/TrancateTable.py";
+                        string pythonFile = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\TrancateTable.py";
                         commands.ExecuteArcpyScript.run_arcpy(pythonFile, featClassLocation);
                         commands.ExecuteArcpyScript.run_arcpy(pythonFile, tableLocation);
                         Console.WriteLine("done truncating roads feature class and roads alias table");

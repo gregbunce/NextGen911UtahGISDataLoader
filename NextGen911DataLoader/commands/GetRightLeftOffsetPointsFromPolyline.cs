@@ -13,8 +13,8 @@ namespace NextGen911DataLoader.commands
         {
             try
             {
-                MapPoint pt_left = GeometryEngine.Instance.MovePointAlongLine(polyline, 0.5, true, -55, SegmentExtension.NoExtension);
-                MapPoint pt_right = GeometryEngine.Instance.MovePointAlongLine(polyline, 0.5, true, 55, SegmentExtension.NoExtension);
+                MapPoint pt_left = GeometryEngine.Instance.MovePointAlongLine(polyline, 0.5, true, -55, SegmentExtensionType.NoExtension);
+                MapPoint pt_right = GeometryEngine.Instance.MovePointAlongLine(polyline, 0.5, true, 55, SegmentExtensionType.NoExtension);
 
                 List<MapPoint> mapPoints = new List<MapPoint>();
                 mapPoints.Add(pt_left);
