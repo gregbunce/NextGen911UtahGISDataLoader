@@ -1,0 +1,9 @@
+Migration Status Report
+  Migrate project: C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\NextGen911DataLoader.csproj
+  NextGen911DataLoader.csproj
+   project folder: 
+   C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\
+   C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\
+   language: CS
+   Warning: this project [C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\] contains References to 'ArcGIS.Core', but the HintPath tag is wrong or missing.  Use the 'Pro Fix References utility' before migrating this project.
+   project type: NonArcGIS
