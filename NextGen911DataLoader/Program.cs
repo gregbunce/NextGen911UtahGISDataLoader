@@ -361,7 +361,7 @@ namespace NextGen911DataLoader
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing roads...");
                 //string sgidRoads = "C:/Users/gbunce/AppData/Roaming/ESRI/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Transportation.Roads";
-                string sgidRoads = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2022_2_9.gdb/Roads";
+                string sgidRoads = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2022_8_4.gdb/Roads";
                 string pythonFileExportData = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\ExportFeatClassToScratchFGDB.py";
                 string where_clause = @"""(FROMADDR_L > 0 and TOADDR_L > 0 and FROMADDR_R > 0 and TOADDR_R > 0) and STATUS not in ( 'Construction', 'Planned' ) and NAME <> '' and (STATE_L = 'UT' and STATE_R = 'UT')"""; 
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads, "Roads", where_clause);
@@ -377,7 +377,7 @@ namespace NextGen911DataLoader
                 // Export the SGID roads into the local scratch database and etl those (in case we have database connectivity issues, etc.)
                 Console.WriteLine("importing address points...");
                 //string sgidAddressPnts = "C:/Users/gbunce/AppData/Roaming/Esri/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Location.AddressPoints";
-                string sgidAddressPnts = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2022_2_9.gdb/AddressPoints";
+                string sgidAddressPnts = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2022_8_4.gdb/AddressPoints";
                 string pythonFileExportData = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\ExportFeatClassToScratchFGDB.py";
                 string where_clause = @"""State = 'UT'""";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidAddressPnts, "AddressPoints", where_clause);
