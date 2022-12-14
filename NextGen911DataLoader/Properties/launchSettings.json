@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "NextGen911DataLoader": {
+      "commandName": "Project"
+    },
+    "UGRC Monthly Run": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Temp\\NG911GIS_Schema.gdb internal.agrc.utah.gov SGID internal addresspoints-t",
+      "workingDirectory": "C:\\Users\\gbunce\\Desktop"
+    }
+  }
+}

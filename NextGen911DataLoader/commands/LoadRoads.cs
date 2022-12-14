@@ -250,7 +250,7 @@ namespace NextGen911DataLoader.commands
                                             // The County value contains the cofips, so parse the stirng to obtain the name only.
                                             string[] parsedDomain = codedDomainValue.Split(' ');
 
-                                            // Check if county has two works (ie: 49003 - Box Elder == 4) these numbers are not zero based
+                                            // Check if county has two words (ie: 49003 - Box Elder == 4) these numbers are not zero based
                                             if (parsedDomain.Length == 4)
                                             {
                                                 countyName = parsedDomain[2] + " " + parsedDomain[3]; // these numbers are zero based
@@ -279,7 +279,7 @@ namespace NextGen911DataLoader.commands
                                             // The County value contains the cofips, so parse the stirng to obtain the name only.
                                             string[] parsedDomain = codedDomainValue.Split(' ');
 
-                                            // Check if county has two works (ie: 49003 - Box Elder == 4) these numbers are not zero based
+                                            // Check if county has two words (ie: 49003 - Box Elder == 4) these numbers are not zero based
                                             if (parsedDomain.Length == 4)
                                             {
                                                 countyName = parsedDomain[2] + " " + parsedDomain[3]; // these numbers are zero based

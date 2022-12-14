@@ -363,7 +363,7 @@ namespace NextGen911DataLoader
                 //string sgidRoads = "C:/Users/gbunce/AppData/Roaming/ESRI/ArcGISPro/Favorites/internal@sgid@internal.agrc.utah.gov.sde/SGID.Transportation.Roads";
                 string sgidRoads = "C:/Users/gbunce/Documents/projects/SGID/local_sgid_data/SGID_2022_12_12.gdb/Roads";
                 string pythonFileExportData = @"C:\Users\gbunce\source\repos\NextGen911DataLoader\NextGen911DataLoader\scripts_arcpy\ExportFeatClassToScratchFGDB.py";
-                string where_clause = @"""(FROMADDR_L > 0 and TOADDR_L > 0 and FROMADDR_R > 0 and TOADDR_R > 0) and STATUS not in ( 'Construction', 'Planned' ) and NAME <> '' and (STATE_L = 'UT' and STATE_R = 'UT')"""; 
+                string where_clause = @"""(FROMADDR_L > 0 and TOADDR_L > 0 and FROMADDR_R > 0 and TOADDR_R > 0) and STATUS not in ( 'Construction', 'Planned' ) and NAME <> '' and (STATE_L = 'UT' and STATE_R = 'UT')""";
                 commands.ExecuteArcpyScript.run_arcpy(pythonFileExportData, sgidRoads, "Roads", where_clause);
                 Console.WriteLine("Done importing roads");
 
