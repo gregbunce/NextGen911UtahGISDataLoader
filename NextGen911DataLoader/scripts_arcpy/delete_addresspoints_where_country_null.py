@@ -8,3 +8,4 @@ with arcpy.da.UpdateCursor(r"C:\Temp\NG911GIS_Schema.gdb\AddressPoints", "*", wh
         int_counter = int_counter + 1
         print("deleted " + str(int_counter))
         uCur.deleteRow ()
+        

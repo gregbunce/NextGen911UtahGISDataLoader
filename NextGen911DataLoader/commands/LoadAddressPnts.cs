@@ -125,7 +125,7 @@ namespace NextGen911DataLoader.commands
                                             rowBuffer["Unit"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("UnitID"));
                                             //rowBuffer["Room"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["Seat"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
-                                            rowBuffer["Addtl_Loc"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddSystem"));
+                                            //rowBuffer["Addtl_Loc"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("AddSystem"));
                                             rowBuffer["LandmkName"] = sourceCursor.Current.GetOriginalValue(sourceCursor.Current.FindField("LandmarkName"));
                                             //rowBuffer["Mile_Post"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField(""));
                                             //rowBuffer["Place_Type"] = SgidCursor.Current.GetOriginalValue(SgidCursor.Current.FindField("PtType"));

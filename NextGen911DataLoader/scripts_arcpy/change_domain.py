@@ -1,4 +1,5 @@
 import arcpy
+#: Use python3
 
 # Set the workspace environment (e.g., geodatabase or folder)
 arcpy.env.workspace = r"C:\Users\gbunce\Documents\projects\SGID\local_sgid_data\SGID_2023_8_3.gdb"

@@ -26,14 +26,15 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ArcGIS.Core">
-      <HintPath>C:\Users\gbunce\AppData\Local\Programs\ArcGIS\Pro\bin\ArcGIS.Core.dll</HintPath>
+      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Core.dll</HintPath>
       <CopyLocal>True</CopyLocal>
       <Private>True</Private>
     </Reference>
     <Reference Include="ArcGIS.CoreHost">
-      <HintPath>C:\Users\gbunce\AppData\Local\Programs\ArcGIS\Pro\bin\ArcGIS.CoreHost.dll</HintPath>
+      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.CoreHost.dll</HintPath>
       <CopyLocal>True</CopyLocal>
       <Private>True</Private>
+      <SpecificVersion></SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
